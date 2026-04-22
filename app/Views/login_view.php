@@ -182,6 +182,5 @@
             New here? <a href="#">Make an account!</a>
         </div>
     </div>
-
 </body>
 </html>
