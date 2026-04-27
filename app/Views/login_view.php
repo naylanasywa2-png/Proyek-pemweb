@@ -66,6 +66,5 @@
             New here? <a href="<?= base_url('register') ?>">Make an account!</a>
         </div>
     </div>
-
 </body>
 </html>
