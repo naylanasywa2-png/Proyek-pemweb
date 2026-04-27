@@ -3,32 +3,42 @@
 namespace App\Controllers;
 
 use App\Controllers\BaseController;
-use Intervention\Image\ImageManagerStatic as Image; // Ini memanggil senjata Vanti
+use Intervention\Image\ImageManager;
+use Intervention\Image\Drivers\Gd\Driver;
 
 class Otomasi extends BaseController
 {
     public function index()
     {
-        // 1. Tentukan lokasi foto (Nanti ini diambil dari database/upload)
-        $templatePath = FCPATH . 'uploads/templates/frame_album.png'; // File bingkai
-        $userPhotoPath = FCPATH . 'uploads/user_photos/foto_vanti.jpg'; // Foto user
+        $manager = new ImageManager(new Driver());
+        
+        // Sesuaikan nama file dengan yang ada di folder public kamu
+        $templatePath = FCPATH . 'uploads/templates/frame_album.jpg'; 
+        $userPhotoPath = FCPATH . 'uploads/user_photos/foto_vanti.jpg'; 
 
-        // 2. Load gambar menggunakan library Intervention
-        // Ibaratnya Vanti sedang mengambil kertas foto dan bingkai
-        $img = Image::make($userPhotoPath);
-
-        // 3. LOGIKA: Resize foto user agar pas di dalam bingkai
-        // Kita paksa ukurannya jadi 500x500 pixel
+        // Proses penggabungan
+        $img = $manager->read($userPhotoPath);
         $img->resize(500, 500);
 
-        // 4. LOGIKA: Tempelkan foto user ke Template
-        // Kita tempel foto user di koordinat X=100, Y=150
-        $template = Image::make($templatePath);
-        $template->insert($img, 'top-left', 100, 150);
+        $template = $manager->read($templatePath);
+        $template->place($img, 'top-left', 100, 150);
 
-        // 5. Simpan hasilnya ke folder results
+        // Simpan hasil ke folder results
         $template->save(FCPATH . 'uploads/results/hasil_album.jpg');
 
-        echo "Hore! Logika Vanti berhasil dijalankan. Cek folder uploads/results!";
+        echo "Hore! Logika Vanti berhasil dijalankan. Cek folder uploads/results/hasil_album.jpg!";
+    }
+
+    public function test()
+    {
+        $manager = new ImageManager(new Driver());
+        $userPhotoPath = FCPATH . 'uploads/user_photos/foto_vanti.jpg'; 
+        
+        $img = $manager->read($userPhotoPath)->resize(300, 200);
+        
+        // Menggunakan cara paling aman untuk menampilkan gambar langsung
+        header('Content-Type: image/jpeg');
+        echo $img->toJpeg();
+        exit;
     }
 }

@@ -39,6 +39,7 @@ class Autoload extends AutoloadConfig
      */
     public $psr4 = [
         APP_NAMESPACE => APPPATH,
+        'Intervention\Image' => ROOTPATH . 'vendor/intervention/image/src/Intervention/Image',
     ];
 
     /**
