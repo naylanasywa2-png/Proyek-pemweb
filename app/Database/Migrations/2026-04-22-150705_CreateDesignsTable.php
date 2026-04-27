@@ -13,6 +13,30 @@ class CreateDesignsTable extends Migration
             'id_desainer'    => ['type' => 'INT', 'constraint' => 11, 'unsigned' => true],
             'nama_desain'    => ['type' => 'VARCHAR', 'constraint' => 100],
             'file_template'  => ['type' => 'VARCHAR', 'constraint' => 255],
+            
+            // --- AWAL TAMBAHAN DARI VANTI ---
+            'x_pos' => [
+                'type'       => 'INT',
+                'constraint' => 5,
+                'default'    => 0,
+            ],
+            'y_pos' => [
+                'type'       => 'INT',
+                'constraint' => 5,
+                'default'    => 0,
+            ],
+            'width_slot' => [
+                'type'       => 'INT',
+                'constraint' => 5,
+                'default'    => 0,
+            ],
+            'height_slot' => [
+                'type'       => 'INT',
+                'constraint' => 5,
+                'default'    => 0,
+            ],
+            // --- AKHIR TAMBAHAN ---
+
             'harga_desain'   => ['type' => 'DECIMAL', 'constraint' => '10,2'],
             'created_at'     => ['type' => 'DATETIME', 'null' => true],
         ]);
