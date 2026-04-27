@@ -4,7 +4,7 @@ namespace Config;
 
 use App\Controllers\Services;
 
-$routes = Services::routes();
+$routes = \Config\Services::routes();
 
 if (file_exists(SYSTEMPATH . 'Config/Routes.php')) {
     require SYSTEMPATH . 'Config/Routes.php';
