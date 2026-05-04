@@ -17,6 +17,19 @@ $routes->setTranslateURIDashes(false);
 $routes->set404Override();
 $routes->setAutoRoute(true);
 
+// Halaman utama: Mengarah ke fungsi index di Home Controller
+$routes->get('/', 'Home::index');
+$routes->get('/katalog', 'Home::katalog');
+
+$routes->get('/katalog/game', 'Home::game');
+$routes->get('/katalog/scrapbook', 'Home::scrapbook');
+$routes->get('/katalog/vintage', 'Home::vintage');
+$routes->get('/katalog/mafia', 'Home::mafia');
+$routes->get('dashboard', 'Home::index');
+$routes->get('logout', 'Auth::logout'); // Sesuaikan jika kamu sudah buat Controller Auth
+
+// Jika nanti kamu buat form pemesanan, tambahkan di sini:
+// $routes->get('user/form_order', 'User::form_order');
 // --- PINTU MASUK ---
 $routes->get('/', 'Auth::index');
 $routes->get('/auth', 'Auth::index');
