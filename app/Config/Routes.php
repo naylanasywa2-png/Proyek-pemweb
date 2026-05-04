@@ -20,6 +20,13 @@ $routes->setAutoRoute(true);
 // Halaman utama: Mengarah ke fungsi index di Home Controller
 $routes->get('/', 'Home::index');
 $routes->get('/katalog', 'Home::katalog');
+$routes->get('login', 'Login::index'); 
+$routes->post('login/auth', 'Login::auth');
+
+$routes->get('order/create', 'Order::create');
+$routes->get('order/create', 'Order::create');
+$routes->post('order/checkout', 'Order::checkout');
+$routes->get('user/history', 'User::history');
 
 $routes->get('/katalog/game', 'Home::game');
 $routes->get('/katalog/scrapbook', 'Home::scrapbook');
