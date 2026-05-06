@@ -9,7 +9,6 @@ class User extends BaseController
     // Halaman Dashboard User
     public function index()
     {
-        // Cek apakah user sudah login, jika belum lempar ke login
         if (!session()->get('logged_in')) {
             return redirect()->to('/login');
         }
@@ -22,8 +21,28 @@ class User extends BaseController
         return view('user/home', $data);
     }
 
-    // Fungsi untuk menampilkan Riwayat Pesanan (History)
-    // Ini untuk memperbaiki error "getHistory not found" tadi
+    // --- TAMBAHKAN KODE DI BAWAH INI ---
+
+    // Fungsi untuk memanggil halaman Katalog Game
+    public function game()
+    {
+        if (!session()->get('logged_in')) {
+            return redirect()->to('/login');
+        }
+        return view('user/themes/game'); 
+    }
+
+    // Fungsi untuk memanggil halaman Katalog Formal (Scrapbook)
+    public function formal()
+    {
+        if (!session()->get('logged_in')) {
+            return redirect()->to('/login');
+        }
+        return view('user/themes/formal'); 
+    }
+
+    // --- SAMPAI DI SINI ---
+
     public function history()
     {
         if (!session()->get('logged_in')) {
@@ -31,8 +50,6 @@ class User extends BaseController
         }
 
         $model = new OrderModel();
-        
-        // Ambil data pesanan berdasarkan ID User yang sedang login
         $id_user = session()->get('id_user');
         $data['orders'] = $model->where('id_user', $id_user)
                                 ->orderBy('id_order', 'DESC')
@@ -41,7 +58,6 @@ class User extends BaseController
         return view('user/history', $data);
     }
 
-    // Fungsi Logout
     public function logout()
     {
         session()->destroy();

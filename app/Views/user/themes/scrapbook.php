@@ -12,6 +12,22 @@
         .photo-frame:hover { transform: rotate(0deg) scale(1.05); z-index: 10; }
         .design-img { width: 300px; height: auto; border: 1px solid #ddd; }
         .btn-back { position: absolute; top: 10px; right: 20px; color: #8d6e63; text-decoration: none; font-weight: bold; }
+        
+        /* Style Tambahan untuk Tombol Biar Senada */
+        .btn-order {
+            background-color: #ff6b81;
+            color: white;
+            padding: 12px 30px;
+            border-radius: 25px;
+            text-decoration: none;
+            font-family: 'Quicksand', sans-serif;
+            font-weight: bold;
+            box-shadow: 0 4px 15px rgba(255, 107, 129, 0.3);
+            display: inline-block;
+            transition: 0.3s;
+            margin-top: 20px;
+        }
+        .btn-order:hover { transform: scale(1.05); background-color: #ff4d6d; }
     </style>
 </head>
 <body>
@@ -29,6 +45,16 @@
             <img src="<?= base_url('uploads/templates/tema-scrapbook/hal2.jpg'); ?>" class="design-img">
             <p>Moment #2</p>
         </div>
+
+        <!-- TARUH DI SINI, AUL ✨ -->
+        <div style="text-align: center; margin-top: 40px; margin-bottom: 20px;">
+            <p style="font-size: 14px; font-style: italic;">Ingin mengabadikan momenmu seperti ini? ✨</p>
+            <a href="<?= base_url('order/create') ?>" class="btn-order">
+               ✂️ PESAN SCRAPBOOKMU SEKARANG ✂️
+            </a>
+        </div>
+        <!-- ----------------------- -->
+
     </div>
 </body>
 </html>
