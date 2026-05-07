@@ -83,7 +83,6 @@
             transform: rotate(-2deg) scale(1.02);
         }
 
-        /* SEMBUNYIKAN HARGA DEFAULT */
         .item-price {
             font-size: 0.8rem;
             background: #ffe5ec;
@@ -96,7 +95,6 @@
             transform: translateY(10px);
         }
 
-        /* MUNCULKAN HARGA SAAT HOVER */
         .photo-frame:hover .item-price {
             opacity: 1;
             transform: translateY(0);
@@ -134,6 +132,7 @@
             text-decoration: none;
             display: inline-block;
             text-align: center;
+            cursor: pointer;
         }
 
         .btn-pesan:hover {
@@ -142,7 +141,6 @@
             box-shadow: 0 5px 15px rgba(251, 111, 146, 0.3);
         }
 
-        /* MODAL STYLING */
         .modal-content {
             border-radius: 30px;
             border: 5px solid #ffcad4;
@@ -198,76 +196,68 @@
             Mau tampil keren seperti ini? Yuk dipesan! ✨
         </p>
 
-        <!-- Button Pemicu Modal -->
         <button type="button" class="btn-pesan" data-bs-toggle="modal" data-bs-target="#orderModal">
             🎀 PESAN KOLEKSI FORMAL SEKARANG 🎀
         </button>
     </div>
 </div>
 
-<!-- Pop-up Konfirmasi Pesanan Ala Scrapbook -->
 <div class="modal fade" id="orderModal" tabindex="-1" aria-hidden="true">
   <div class="modal-dialog modal-dialog-centered">
     <div class="modal-content" style="border-radius: 40px; border: 3px solid #ffcad4; padding: 20px;">
       
       <div class="modal-body">
-        <!-- Ikon Lucu & Judul -->
         <div class="text-center mb-4">
             <div style="font-size: 1.5rem;">✨ 🛍️ ✨</div>
             <h2 style="font-family: 'Quicksand', sans-serif; font-weight: 700; color: #ff8fab; margin-top: 10px;">Konfirmasi Pesanan</h2>
         </div>
 
-        <form>
-            <!-- Pilih Tema -->
+        <form action="<?= site_url('order/checkout') ?>" method="post">
+            <?= csrf_field() ?>
+            
+            <input type="hidden" name="id_desain" value="formal_pink">
+            <input type="hidden" name="id_vendor" value="1">
+
             <div class="mb-3">
                 <label class="form-label small fw-bold" style="color: #ff8fab;">Pilih Tema Estetikmu 🎨</label>
-                <select class="form-select" style="border-radius: 15px; border-color: #ffcad4; color: #666;">
-                    <option selected>Pilih tema dulu ya~</option>
-                    <option value="formal">Formal Look (Pink Edition)</option>
+                <select class="form-select" name="tema_pilihan" style="border-radius: 15px; border-color: #ffcad4; color: #666;">
+                    <option value="formal" selected>Formal Look (Pink Edition)</option>
                     <option value="casual">Casual Scrapbook</option>
                     <option value="vintage">Vintage Dreams</option>
                 </select>
             </div>
 
-            <!-- Jumlah Pesanan -->
             <div class="mb-3">
                 <label class="form-label small fw-bold" style="color: #ff8fab;">Mau pesan berapa? 🎀</label>
-                <input type="text" class="form-control" placeholder="Contoh: 10" style="border-radius: 15px; border-color: #ffcad4;">
+                <input type="number" name="jumlah" class="form-control" placeholder="Contoh: 10" style="border-radius: 15px; border-color: #ffcad4;" required>
             </div>
 
-            <!-- Metode Pembayaran -->
             <div class="mb-3">
                 <label class="form-label small fw-bold" style="color: #ff8fab;">Metode Pembayaran 💸</label>
-                <select class="form-select" style="border-radius: 15px; border-color: #ffcad4; color: #666;">
-                    <option selected>Pilih cara bayar~</option>
-                    <option>Transfer Bank</option>
-                    <option>E-Wallet (Dana/OVO)</option>
-                    <option>QRIS</option>
+                <select class="form-select" name="metode_pembayaran" style="border-radius: 15px; border-color: #ffcad4; color: #666;">
+                    <option value="bank">Transfer Bank</option>
+                    <option value="dana">E-Wallet (Dana/OVO)</option>
+                    <option value="qris">QRIS</option>
                 </select>
             </div>
 
-            <!-- Total Bayar (Read Only) -->
             <div class="mb-4">
-                <label class="form-label small fw-bold" style="color: #ff8fab;">Total yang dibayar 📥</label>
-                <input type="text" class="form-control" value="Akan muncul otomatis~" readonly style="border-radius: 15px; border-color: #ffcad4; background-color: #fff5f7; color: #999;">
+                <label class="form-label small fw-bold" style="color: #ff8fab;">Info Harga 📥</label>
+                <input type="text" class="form-control" value="Rp 15.000 / pcs" readonly style="border-radius: 15px; border-color: #ffcad4; background-color: #fff5f7; color: #999;">
             </div>
 
-            <!-- Tombol Checkout -->
-            <button type="button" class="btn w-100 shadow-sm" style="background: #ff8fab; color: white; border-radius: 50px; padding: 12px; font-weight: bold; border: none;">
+            <button type="submit" class="btn w-100 shadow-sm" style="background: #ff8fab; color: white; border-radius: 50px; padding: 12px; font-weight: bold; border: none;">
                 ❤️ OKE, CHECKOUT! ❤️
             </button>
         </form>
-
-        <!-- Footer Modal -->
         <div class="text-center mt-3">
             <small style="color: #ffcad4; font-size: 0.7rem; font-family: 'Quicksand', sans-serif;">Created with Love by @AULIA 🎀</small>
         </div>
       </div>
-
     </div>
   </div>
 </div>
 
-<!-- Bootstrap Bundle JS -->
-<script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>v</body>
+<script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
+</body>
 </html>

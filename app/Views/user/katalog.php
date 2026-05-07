@@ -36,7 +36,6 @@
             max-width: 1100px;
         }
 
-        /* Card Link Wrapper */
         .card-link {
             text-decoration: none;
             color: inherit;
@@ -81,7 +80,9 @@
             color: #777;
         }
 
+        /* Perbaikan Style Tombol Back */
         .btn-back {
+            display: inline-block;
             margin-top: 50px;
             text-decoration: none;
             color: #ff69b4;
@@ -90,11 +91,14 @@
             border: 2px solid #ff69b4;
             border-radius: 50px;
             transition: 0.3s;
+            background: white;
+            cursor: pointer;
         }
 
         .btn-back:hover {
             background: #ff69b4;
             color: white;
+            transform: scale(1.05);
         }
     </style>
 </head>
@@ -106,8 +110,7 @@
 </div>
 
 <div class="grid-container">
-    <!-- Tema Game -->
-    <a href="<?= base_url('katalog/game'); ?>" class="card-link">
+    <a href="<?= site_url('katalog/game'); ?>" class="card-link">
         <div class="card">
             <span class="icon">🎮</span>
             <h3>Level Up: Game</h3>
@@ -115,8 +118,7 @@
         </div>
     </a>
 
-    <!-- Tema Scrapbook -->
-    <a href="<?= base_url('katalog/scrapbook'); ?>" class="card-link">
+    <a href="<?= site_url('katalog/scrapbook'); ?>" class="card-link">
         <div class="card">
             <span class="icon">✂️</span>
             <h3>DIY Scrapbook</h3>
@@ -124,8 +126,7 @@
         </div>
     </a>
 
-    <!-- Tema Vintage -->
-    <a href="<?= base_url('katalog/vintage'); ?>" class="card-link">
+    <a href="<?= site_url('katalog/vintage'); ?>" class="card-link">
         <div class="card">
             <span class="icon">🎞️</span>
             <h3>Classic Vintage</h3>
@@ -133,8 +134,7 @@
         </div>
     </a>
 
-    <!-- Tema Mafia -->
-    <a href="<?= base_url('katalog/mafia'); ?>" class="card-link">
+    <a href="<?= site_url('katalog/mafia'); ?>" class="card-link">
         <div class="card">
             <span class="icon">🎩</span>
             <h3>The Mafia World</h3>
@@ -142,17 +142,15 @@
         </div>
     </a>
 
-    <!-- Tema Streetwear -->
-    <a href="<?= base_url('katalog/streetwear'); ?>" class="card-link">
+    <a href="<?= site_url('katalog/streetwear'); ?>" class="card-link">
         <div class="card">
-            <span class="icon">🛹</span>
+            <span class="icon"> Skateboarding 🛹</span>
             <h3>Urban Streetwear</h3>
             <p>Gaya santai, grafiti, dan vibes anak muda kota yang keren.</p>
         </div>
     </a>
 
-    <!-- Tema Formal -->
-    <a href="<?= base_url('katalog/formal'); ?>" class="card-link">
+    <a href="<?= site_url('katalog/formal'); ?>" class="card-link">
         <div class="card">
             <span class="icon">🏛️</span>
             <h3>Grand Academy</h3>
@@ -161,7 +159,11 @@
     </a>
 </div>
 
-<a href="<?= base_url('/'); ?>" class="btn-back">⬅ Back to Home</a>
+<?php if (session()->get('logged_in')): ?>
+    <a href="<?= site_url('user/home'); ?>" class="btn-back">⬅ Back to Dashboard</a>
+<?php else: ?>
+    <a href="<?= site_url('/'); ?>" class="btn-back">⬅ Back to Home</a>
+<?php endif; ?>
 
 </body>
 </html>

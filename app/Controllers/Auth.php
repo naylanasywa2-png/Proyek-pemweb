@@ -6,12 +6,11 @@ class Auth extends BaseController
 {
     public function index()
     {
+        // Kalau sudah login, jangan kasih halaman login lagi, lempar ke katalog
+        if (session()->get('logged_in')) {
+            return redirect()->to(site_url('katalog'));
+        }
         return view('login_view');
-    }
-
-    public function register()
-    {
-        return view('register_view');
     }
 
     public function getKatalog()
@@ -19,25 +18,40 @@ class Auth extends BaseController
         return view('user/katalog');
     }
 
-    // --- RUTE TEMA KATALOG (PASTIKAN SEMUA ADA DI SINI) ---
+    // --- TEMA-TEMA KATALOG ---
     public function getScrapbook() { return view('user/themes/scrapbook'); }
     public function getVintage() { return view('user/themes/vintage'); }
     public function getMafia() { return view('user/themes/mafia'); }
     public function getUrban() { return view('user/themes/urban'); }
     public function getGrandAcademy() { return view('user/themes/academy'); }
-    
-    // Ini yang tadi kurang, makanya error "getFormal not found"
     public function getFormal() { return view('user/themes/formal'); }
+    public function getGame() { return view('user/themes/game'); }
 
-    // --- FUNGSI LOGIN & LOGOUT (Jika sudah ada sebelumnya, pastikan tetap ada) ---
     public function login_action()
     {
-        // ... kode login kamu ...
+        $session = session();
+        $username = $this->request->getPost('username');
+        $password = $this->request->getPost('password');
+
+        // Simulasi database sederhana
+        if ($username == 'aulia' && $password == '123') { 
+            $session->set([
+                'id_user'   => 1, // Angka 1 inilah yang dicari database kamu
+                'username'  => $username,
+                'logged_in' => true,
+                'role'      => 'user'
+            ]);
+            
+            // Cek apakah ada tujuan halaman sebelumnya (misal mau ke checkout tapi disuruh login dulu)
+            return redirect()->to(site_url('order/create'));
+        } else {
+            return redirect()->back()->with('error', 'Username atau password salah ya Aulia! 🎀');
+        }
     }
 
     public function logout()
     {
         session()->destroy();
-        return redirect()->to('/login');
+        return redirect()->to(site_url('katalog'))->with('msg', 'Berhasil keluar! Sampai jumpa lagi~');
     }
 }
