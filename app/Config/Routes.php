@@ -6,25 +6,36 @@ use CodeIgniter\Router\RouteCollection;
  * @var RouteCollection $routes
  */
 
-// --- RUTE UTAMA & AUTH (Tugas Ega/Nasywa) ---
+// --- RUTE UTAMA & AUTH ---
 $routes->get('/', 'Home::index');
 $routes->get('/login', 'Login::index');
-$routes->get('/dashboard', 'Dashboard::index'); // Tambahan rute dashboard Nasywa
+$routes->get('/dashboard', 'Dashboard::index');
 
-// --- RUTE LOGISTIK & API (Tugas Cindy) ---
-$routes->group('logistik', function($routes) {
-    $routes->get('tesongkir', 'Logistik::tesOngkir');
+// --- RUTE LOGISTIK & API ---
+$routes->group('logistik', function ($routes) {
+    // Cek ongkir (GET = tampilkan form, POST = proses)
+    $routes->get('tesongkir',  'Logistik::tesOngkir');
     $routes->post('tesongkir', 'Logistik::tesOngkir');
-    $routes->get('testemail', 'Logistik::testEmail');
-    $routes->get('test-db', 'Logistik::testSimpanOrder');
+
+    // Halaman konfirmasi detail sebelum simpan (POST only)
+    $routes->post('detail-pesanan', 'Logistik::detailPesanan');
+
+    // Simpan ke DB (POST only, dari halaman konfirmasi)
     $routes->post('simpan-pesanan', 'Logistik::simpanPesanan');
+
+    // Daftar pesanan
     $routes->get('daftar-pesanan', 'Logistik::daftarPesanan');
-    $routes->get('hapus-pesanan/(:num)', 'Logistik::hapusPesanan/$1');
+
+    // Hapus pesanan - sekarang POST (lebih aman dari GET)
+    $routes->post('hapus-pesanan/(:num)', 'Logistik::hapusPesanan/$1');
+
+    // Dev tools
+    $routes->get('testemail',  'Logistik::testEmail');
+    $routes->get('test-db',    'Logistik::testSimpanOrder');
 });
 
-// --- RUTE OTOMASI & RENDER (Tugas Vanti) ---
+// --- RUTE OTOMASI ---
 $routes->get('otomasi', 'Otomasi::index');
-// Tambahkan rute render jika Vanti sudah membuat controller-nya
 
-// --- [SEMENTARA] Diagnostik API Komerce - hapus setelah selesai ---
-$routes->get('diagnostik-api', 'DiagnostikAPI::index');
+// --- [SEMENTARA] Diagnostik API - hapus setelah selesai testing ---
+$routes->get('diagnostik-api', 'DiagnostikAPI::index');
