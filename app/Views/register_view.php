@@ -1,45 +1,53 @@
 <!DOCTYPE html>
-<html lang="en">
+<html lang="id">
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Yearbook AI | Join Us! ✨</title>
-    <link href="https://fonts.googleapis.com/css2?family=Fredoka:wght@400;600&display=swap" rel="stylesheet">
+    <title>Daftar Akun | MBook ✨</title>
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
+    <link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;600;700;800&display=swap" rel="stylesheet">
     <style>
-        /* CSS-nya sama persis kayak login tadi biar konsisten */
-        * { margin: 0; padding: 0; box-sizing: border-box; font-family: 'Fredoka', sans-serif; }
-        body { background: linear-gradient(135deg, #B5FFFC 0%, #FFDEE9 100%); height: 100vh; display: flex; justify-content: center; align-items: center; overflow: hidden; }
-        .login-container { background: #fff; padding: 50px 40px; border-radius: 30px; width: 90%; max-width: 420px; text-align: center; box-shadow: 10px 10px 30px rgba(0,0,0,0.05); border: 5px solid #fff; }
-        .icon-area { font-size: 4rem; margin-bottom: 20px; }
-        h2 { font-weight: 600; font-size: 2.2rem; color: #FF85A1; margin-bottom: 10px; }
-        p { font-size: 1rem; color: #888; margin-bottom: 35px; }
-        input { width: 100%; padding: 18px 25px; background: #FDFDFD; border: none; border-radius: 15px; color: #555; font-size: 1rem; outline: none; margin-bottom: 15px; box-shadow: inset 2px 2px 5px rgba(0,0,0,0.03); }
-        button { width: 100%; padding: 18px; border: none; border-radius: 15px; background: linear-gradient(135deg, #FFAFBD 0%, #FFC3A0 100%); color: #fff; font-weight: 600; font-size: 1.1rem; cursor: pointer; transition: 0.3s; }
-        button:hover { transform: translateY(-4px); box-shadow: 0 8px 15px rgba(255, 175, 189, 0.3); }
-        .footer-text { margin-top: 30px; font-size: 0.9rem; color: #AAA; }
-        .footer-text a { color: #FF85A1; font-weight: 600; text-decoration: none; }
+        body {
+            font-family: 'Plus Jakarta Sans', sans-serif;
+            background: linear-gradient(135deg, #fdf2f8 0%, #f3f0ff 100%);
+            height: 100vh;
+            display: flex; align-items: center; justify-content: center; margin: 0;
+        }
+        .register-card {
+            background: white;
+            padding: 40px;
+            border-radius: 30px;
+            box-shadow: 0 20px 40px rgba(165, 148, 249, 0.1);
+            width: 100%; max-width: 400px; text-align: center;
+        }
+        .brand-name { font-weight: 800; color: #ff8fa3; font-size: 24px; margin-bottom: 25px; }
+        .form-control-custom {
+            background: #f8f7fd; border: 2px solid transparent; border-radius: 15px;
+            padding: 12px 20px; margin-bottom: 15px; width: 100%; transition: 0.3s;
+        }
+        .form-control-custom:focus { border-color: #ffabe1; background: white; outline: none; }
+        .btn-register {
+            background: linear-gradient(135deg, #ffabe1 0%, #ff8fa3 100%);
+            color: white; border: none; width: 100%; padding: 12px;
+            border-radius: 50px; font-weight: 700; cursor: pointer; transition: 0.3s;
+        }
+        .btn-register:hover { transform: translateY(-2px); box-shadow: 0 10px 20px rgba(255, 171, 225, 0.4); }
+        .footer-link { margin-top: 20px; font-size: 13px; color: #777; }
+        .footer-link a { color: #ff8fa3; text-decoration: none; font-weight: 700; }
     </style>
 </head>
 <body>
-    <div class="login-container">
-        <div class="icon-area">📝💖</div>
-        <h2>Join Us!</h2>
-        <p>Create an account to start your journey ~</p>
-
-        <?php if(session()->getFlashdata('msg')): ?>
-        <div style="color: white; background-color: #ff4d4d; padding: 10px; margin-bottom: 15px; border-radius: 5px;">
-        <?= session()->getFlashdata('msg') ?>
-        </div>
-        <?php endif; ?>
+    <div class="register-card">
+        <div class="brand-name">Buat Akun Baru ✨</div>
         
-        <form action="<?= base_url('auth/register_action') ?>" method="post">
-            <input type="email" name="email" placeholder="Your best email" required>
-            <input type="password" name="password" placeholder="Create a secret password" required>
-            <button type="submit">Sign Me Up! ✨</button>
+        <form action="<?= base_url('auth/register_action') ?>" method="POST">
+            <input type="text" name="email" class="form-control-custom" placeholder="Username / Email" required>
+            <input type="password" name="password" class="form-control-custom" placeholder="Password Baru" required>
+            <button type="submit" class="btn-register">Daftar Sekarang ✨</button>
         </form>
 
-        <div class="footer-text">
-            Already have an account? <a href="<?= base_url('auth') ?>">Log in here!</a>
+        <div class="footer-link">
+            Sudah punya akun? <a href="<?= base_url('login') ?>">Masuk di sini</a>
         </div>
     </div>
 </body>
