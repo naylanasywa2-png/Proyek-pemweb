@@ -3,63 +3,61 @@
 namespace App\Controllers;
 
 use App\Controllers\BaseController;
+use App\Services\OngkirService;
 
 class Logistik extends BaseController
 {
-   public function tesOngkir()
+    // Daftar kota tujuan (sementara hardcode — nanti bisa diisi dari API destination/search)
+    // ID ini perlu disesuaikan dengan Komerce Destination ID setelah API aktif
+    private array $kotaTujuan = [
+        ['id' => 4982,  'name' => 'Jakarta Barat - Cengkareng'],
+        ['id' => 5007,  'name' => 'Jakarta Pusat - Gambir'],
+        ['id' => 5046,  'name' => 'Jakarta Selatan - Kebayoran Baru'],
+        ['id' => 5095,  'name' => 'Jakarta Timur - Jatinegara'],
+        ['id' => 5132,  'name' => 'Jakarta Utara - Kelapa Gading'],
+        ['id' => 12043, 'name' => 'Surabaya - Genteng'],
+        ['id' => 6428,  'name' => 'Bandung - Coblong'],
+        ['id' => 1542,  'name' => 'Denpasar - Denpasar Selatan'],
+        ['id' => 11113, 'name' => 'Yogyakarta - Gondokusuman'],
+        ['id' => 13350, 'name' => 'Medan - Medan Kota'],
+    ];
+
+    // Kota asal: Surabaya - Genteng (sesuaikan jika berbeda)
+    private int $asalId = 12043;
+
+    public function tesOngkir()
     {
-        // 1. WAJIB: Load helper url agar base_url() di View bisa bekerja
         helper(['url', 'form']);
 
-        // 2. Pastikan method diubah ke huruf kecil semua agar if-statement berfungsi
-        $method = strtolower($this->request->getMethod());
+        $method  = strtolower($this->request->getMethod());
+        $service = new OngkirService();
 
         if ($method === 'post') {
-            $tujuan = $this->request->getPost('tujuan');
-            $berat  = $this->request->getPost('berat');
+            $tujuan  = (int) $this->request->getPost('tujuan');
+            $berat   = (float) $this->request->getPost('berat'); // dalam gram dari form
         } else {
-            // Default saat halaman baru dibuka
-            $tujuan = "151";
-            $berat = 1000;
+            $tujuan  = 4982; // Default: Jakarta Barat - Cengkareng
+            $berat   = 1000;  // 1000 gram
         }
 
-        $hasilJson = $this->hitungOngkir($tujuan, $berat);
-        $data['results'] = json_decode($hasilJson, true);
+        // Konversi gram ke kg (Komerce pakai kg)
+        $beratKg = $berat / 1000;
 
-        // Kirim status ke view untuk memastikan data terproses
-        $data['is_post'] = ($method === 'post');
+        $result = $service->cekOngkir(
+            shipperId:  $this->asalId,
+            receiverId: $tujuan,
+            weight:     $beratKg,
+            itemValue:  50000,
+            cod:        'no'
+        );
 
-        return view('cek_ongkir', $data);
-    }
-
-    private function hitungOngkir($tujuan, $berat)
-    {
-        // Masukkan API Key BinderByte kamu di sini
-        $apiKey = "b4e6ecf08961a23b57ea371a26dfd66f9f9e63a5db69d552f4f5ae86f5fe7199";
-
-        $curl = curl_init();
-
-        $url = "https://api.binderbyte.com/v1/cost?api_key=$apiKey&courier=jne&origin=surabaya&destination=$tujuan&weight=$berat";
-
-        curl_setopt_array($curl, array(
-            CURLOPT_URL => $url,
-            CURLOPT_RETURNTRANSFER => true,
-            CURLOPT_ENCODING => "",
-            CURLOPT_MAXREDIRS => 10,
-            CURLOPT_TIMEOUT => 30,
-            CURLOPT_HTTP_VERSION => CURL_HTTP_VERSION_1_1,
-            CURLOPT_CUSTOMREQUEST => "GET",
-            // 3. WAJIB DI XAMPP: Bypass SSL agar request API tidak ditolak oleh localhost
-            CURLOPT_SSL_VERIFYHOST => 0,
-            CURLOPT_SSL_VERIFYPEER => 0,
-        ));
-
-        $response = curl_exec($curl);
-        $err = curl_error($curl);
-
-        curl_close($curl);
-
-        return ($err) ? "Error" : $response;
+        return view('cek_ongkir', [
+            'result'     => $result,
+            'kota_list'  => $this->kotaTujuan,
+            'tujuan'     => $tujuan,
+            'berat'      => (int) $berat,
+            'is_post'    => ($method === 'post'),
+        ]);
     }
    
     public function testEmail()
@@ -115,11 +113,13 @@ class Logistik extends BaseController
 
         // Menangkap data dari form (termasuk id_desain dari temanmu)
         $id_desain_terpilih = $this->request->getPost('id_desain');
-        $biaya_ongkir = $this->request->getPost('biaya');
+        $biaya_ongkir = (int) $this->request->getPost('biaya');
+        $kurir        = $this->request->getPost('kurir')   ?? '-';
+        $layanan      = $this->request->getPost('layanan') ?? '-';
 
         $data = [
-            'id_user'        => 1, // Sementara manual
-            'id_desain'      => $id_desain_terpilih ?? 1, // Gunakan ID desain terpilih
+            'id_user'        => 1, // Sementara manual — nanti ganti dengan session user
+            'id_desain'      => $id_desain_terpilih ?? 1,
             'id_vendor'      => 1,
             'jumlah'         => 1,
             'ongkir'         => $biaya_ongkir,
@@ -129,10 +129,11 @@ class Logistik extends BaseController
         ];
 
         if ($db->table('orders')->insert($data)) {
-            session()->setFlashdata('sukses', 'Yey! Pesanan kamu berhasil dibuat ✨');
-            return redirect()->to(base_url('logistik/daftar-pesanan'));
+            session()->setFlashdata('sukses', "✅ Pesanan berhasil! Kurir: {$kurir} ({$layanan}), Ongkir: Rp " . number_format($biaya_ongkir, 0, ',', '.'));
+            return redirect()->to(base_url('logistik/tesongkir'));
         } else {
-            return "Gagal menyimpan data.";
+            session()->setFlashdata('error', 'Gagal menyimpan pesanan. Silakan coba lagi.');
+            return redirect()->to(base_url('logistik/tesongkir'));
         }
     }
 

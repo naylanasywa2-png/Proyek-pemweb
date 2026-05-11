@@ -25,3 +25,6 @@ $routes->group('logistik', function($routes) {
 // --- RUTE OTOMASI & RENDER (Tugas Vanti) ---
 $routes->get('otomasi', 'Otomasi::index');
 // Tambahkan rute render jika Vanti sudah membuat controller-nya
+
+// --- [SEMENTARA] Diagnostik API Komerce - hapus setelah selesai ---
+$routes->get('diagnostik-api', 'DiagnostikAPI::index');
