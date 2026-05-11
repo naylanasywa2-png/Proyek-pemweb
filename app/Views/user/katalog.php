@@ -103,7 +103,6 @@
             font-size: 0.9rem;
         }
 
-        /* Banner Card */
         .welcome-banner {
             background: var(--gradient-banner);
             border-radius: 25px;
@@ -123,7 +122,6 @@
             filter: drop-shadow(0 10px 15px rgba(0,0,0,0.1));
         }
 
-        /* --- FILTER TABS --- */
         .filter-container {
             display: flex;
             gap: 12px;
@@ -151,7 +149,6 @@
             border-color: var(--purple-primary);
         }
 
-        /* --- THEME CARD (UKURAN DIPERBAIKI) --- */
         .theme-card {
             background: white;
             border-radius: 22px;
@@ -210,7 +207,6 @@
             color: white;
         }
 
-        /* Style untuk Tombol Masuk */
         .btn-login-header {
             background: var(--purple-primary);
             color: white !important;
@@ -232,14 +228,14 @@
 <body>
 
     <div class="sidebar">
-        <a href="#" class="brand-logo">
+        <a href="<?= base_url('katalog') ?>" class="brand-logo">
             <i class="fas fa-book-open"></i>
             <span>MBook📖</span>
         </a>
         <div class="nav-menu">
-            <a href="#" class="nav-link-custom active"><i class="fas fa-house"></i> Beranda</a>
-            <a href="#" class="nav-link-custom"><i class="fas fa-shopping-bag"></i> Pesanan Saya</a>
-            <a href="#" class="nav-link-custom"><i class="fas fa-wallet"></i> Pembayaran</a>
+            <a href="<?= base_url('katalog') ?>" class="nav-link-custom active"><i class="fas fa-house"></i> Beranda</a>
+            <a href="<?= base_url('user/history') ?>" class="nav-link-custom"><i class="fas fa-shopping-bag"></i> Pesanan Saya</a>
+            <a href="<?= base_url('pembayaran') ?>" class="nav-link-custom"><i class="fas fa-wallet"></i> Pembayaran</a>
             <a href="#" class="nav-link-custom"><i class="fas fa-user-gear"></i> Pengaturan</a>
         </div>
         
@@ -262,9 +258,15 @@
                 <i class="far fa-bell fs-5 text-muted"></i>
 
                 <?php if (session()->get('logged_in')): ?>
-                    <div class="d-flex align-items-center gap-2 bg-white p-1 pe-3 rounded-pill shadow-sm border">
-                        <img src="https://ui-avatars.com/api/?name=<?= session()->get('nama') ?>&background=a594f9&color=fff" width="35" class="rounded-circle">
-                        <span class="small fw-bold text-dark"><?= session()->get('nama') ?></span>
+                    <div class="dropdown">
+                        <div class="d-flex align-items-center gap-2 bg-white p-1 pe-3 rounded-pill shadow-sm border" style="cursor: pointer;" data-bs-toggle="dropdown">
+                            <img src="https://ui-avatars.com/api/?name=<?= session()->get('nama') ?>&background=a594f9&color=fff" width="35" class="rounded-circle">
+                            <span class="small fw-bold text-dark"><?= session()->get('nama') ?></span>
+                            <i class="fas fa-chevron-down small text-muted"></i>
+                        </div>
+                        <ul class="dropdown-menu dropdown-menu-end border-0 shadow-lg mt-2" style="border-radius: 15px;">
+                            <li><a class="dropdown-item py-2" href="<?= base_url('logout') ?>"><i class="fas fa-sign-out-alt me-2 text-danger"></i> Keluar</a></li>
+                        </ul>
                     </div>
                 <?php else: ?>
                     <a href="<?= base_url('login') ?>" class="btn-login-header">
@@ -276,12 +278,18 @@
 
         <div class="welcome-banner">
             <div style="max-width: 60%;">
-                <h2 class="fw-bold mb-2">Halo, <?= session()->get('nama') ?? 'Teman' ?>! 🎀</h2>
+                <h2 class="fw-bold mb-2">Halo, <?= session()->get('logged_in') ? session()->get('nama') : 'Teman' ?>! 🎀</h2>
                 <p class="mb-4 opacity-75">Cari dan pilih tema yearbook estetik untuk kenangan sekolahmu di sini.</p>
                 <a href="#" class="btn btn-light rounded-pill px-4 fw-bold text-primary shadow-sm">Lihat Panduan</a>
             </div>
             <img src="https://cdn-icons-png.flaticon.com/512/3429/3429153.png" alt="Books">
         </div>
+
+        <?php if (session()->getFlashdata('success')): ?>
+            <div class="alert alert-success border-0 shadow-sm rounded-4 mb-4">
+                <?= session()->getFlashdata('success') ?>
+            </div>
+        <?php endif; ?>
 
         <div class="filter-container">
             <div class="filter-btn active">Semua Tema</div>

@@ -3,6 +3,7 @@
 namespace Config;
 
 use CodeIgniter\Config\Filters as BaseFilters;
+// Import filter sistem yang dibutuhkan
 use CodeIgniter\Filters\CSRF;
 use CodeIgniter\Filters\DebugToolbar;
 use CodeIgniter\Filters\Honeypot;
@@ -12,7 +13,7 @@ use CodeIgniter\Filters\SecureHeaders;
 class Filters extends BaseFilters
 {
     /**
-     * Daftar alias filter yang bisa digunakan.
+     * Daftar alias filter.
      */
     public array $aliases = [
         'csrf'          => CSRF::class,
@@ -20,45 +21,44 @@ class Filters extends BaseFilters
         'honeypot'      => Honeypot::class,
         'invalidchars'  => InvalidChars::class,
         'secureheaders' => SecureHeaders::class,
-        'auth'          => \App\Filters\AuthFilter::class, // Satpam login kita
+        // TAMBAHKAN DUA BARIS INI BIAR NGAK ERROR LAGI:
+        'forcehttps'    => \CodeIgniter\Filters\ForceHTTPS::class,
+        'pagecache'     => \CodeIgniter\Filters\PageCache::class,
+        // Filter login kamu
+        'auth'          => \App\Filters\AuthFilter::class,
     ];
 
     /**
      * List filter yang WAJIB dijalankan.
-     * Kita kosongkan 'before' agar tidak ada error "forcehttps" lagi.
      */
     public array $required = [
         'before' => [
-            // Kosongkan ini lul, biar nggak error FilterException lagi
-        ],
-        'after' => [
-            'toolbar', // Biar bar debug di bawah tetap muncul
-        ],
-    ];
-
-    /**
-     * Filter yang berjalan secara global.
-     */
-    public array $globals = [
-        'before' => [
-            // 'auth' sengaja dimatikan (dikomentar) agar Landing Page bisa dibuka bebas
-            // 'auth' => ['except' => ['/', 'login', 'auth/*', 'katalog', 'katalog/*']],
+            'forcehttps', // Sistem butuh alias ini terdaftar di atas
+            'pagecache',
         ],
         'after' => [
             'toolbar',
+            'pagecache',
         ],
     ];
 
     /**
-     * Filter berdasarkan metode HTTP (GET, POST, dll).
+     * Filter global (kosongkan before agar landing page aman)
      */
-    public array $methods = [];
+    public array $globals = [
+        'before' => [],
+        'after'  => ['toolbar'],
+    ];
 
     /**
-     * Filter khusus untuk halaman tertentu.
+     * Filter khusus halaman tertentu
      */
     public array $filters = [
-        // Jika nanti ingin mengunci halaman order, baru aktifkan ini:
-        // 'auth' => ['before' => ['order/*', 'admin/*']],
+        'auth' => ['before' => [
+            'user/history', // Biar menu "Pesanan Saya" aman
+            'order/*', 
+            'admin/*',
+            'desainer/*'
+        ]],
     ];
 }
