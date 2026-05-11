@@ -25,15 +25,15 @@ class Database extends Config
      * @var array<string, mixed>
      */
     public array $default = [
-        'DSN'          => '',
-        'hostname'     => 'localhost',
-        'username'     => '',
-        'password'     => '',
-        'database'     => '',
-        'DBDriver'     => 'MySQLi',
-        'DBPrefix'     => '',
-        'pConnect'     => false,
-        'DBDebug'      => true,
+    'DSN'          => '',
+    'hostname'     => 'localhost',
+    'username'     => 'root',      // Tulis root di sini
+    'password'     => '',          // Kosongkan jika pakai XAMPP standar
+    'database'     => 'db_memories_book', // Sesuaikan nama database kamu
+    'DBDriver'     => 'MySQLi',
+    'DBPrefix'     => '',
+    'pConnect'     => false,
+    'DBDebug'      => true,
         'charset'      => 'utf8mb4',
         'DBCollat'     => 'utf8mb4_general_ci',
         'swapPre'      => '',

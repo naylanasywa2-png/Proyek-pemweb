@@ -70,17 +70,13 @@ class Filters extends BaseFilters
      *     after: array<string, array{except: list<string>|string}>|list<string>
      * }
      */
-    public array $globals = [
-        'before' => [
-            // 'honeypot',
-            // 'csrf',
-            // 'invalidchars',
-        ],
-        'after' => [
-            // 'honeypot',
-            // 'secureheaders',
-        ],
-    ];
+    // Cari bagian ini di app/Config/Filters.php
+public array $globals = [
+    'before' => [
+        'csrf' => ['except' => ['logistik/tesongkir']], // Tambahkan pengecualian ini jika masih stuck
+        // ...
+    ],
+];
 
     /**
      * List of filter aliases that works on a
