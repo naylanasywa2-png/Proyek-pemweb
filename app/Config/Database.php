@@ -24,16 +24,16 @@ class Database extends Config
      *
      * @var array<string, mixed>
      */
-    public array $default = [
+  public array $default = [
         'DSN'          => '',
         'hostname'     => 'localhost',
-        'username'     => '',
-        'password'     => '',
-        'database'     => '',
+        'username'     => 'root', // Tambahkan 'root'
+        'password'     => '',     // Biarkan kosong jika tidak ada password di XAMPP
+        'database'     => 'db_memories_book', // Isi dengan nama database kamu
         'DBDriver'     => 'MySQLi',
         'DBPrefix'     => '',
         'pConnect'     => false,
-        'DBDebug'      => true,
+        'DBDebug'      => true, // Pastikan ini true agar error muncul
         'charset'      => 'utf8mb4',
         'DBCollat'     => 'utf8mb4_general_ci',
         'swapPre'      => '',
@@ -50,6 +50,7 @@ class Database extends Config
             'time'     => 'H:i:s',
         ],
     ];
+    
 
     //    /**
     //     * Sample database connection for SQLite3.
