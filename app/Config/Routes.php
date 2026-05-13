@@ -8,8 +8,12 @@ use CodeIgniter\Router\RouteCollection;
 
 // --- RUTE UTAMA & AUTH ---
 $routes->get('/', 'Home::index');
-$routes->get('/login', 'Login::index');
-$routes->get('/dashboard', 'Dashboard::index');
+$routes->get('login', 'Auth::login');
+$routes->post('login', 'Auth::loginProcess');
+$routes->get('logout', 'Auth::logout');
+$routes->get('register', 'Auth::register');
+$routes->post('register', 'Auth::registerProcess');
+$routes->get('dashboard', 'Dashboard::index', ['filter' => 'auth']);
 
 // --- RUTE LOGISTIK & API ---
 $routes->group('logistik', function ($routes) {

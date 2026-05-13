@@ -51,7 +51,7 @@ class OngkirService
         $params = http_build_query([
             'shipper_destination_id'  => $shipperId,
             'receiver_destination_id' => $receiverId,
-            'weight'                  => $beratGram,   // ← dalam GRAM
+            'weight'                  => $weight,      // ← API Komerce sandbox butuh KG (bukan Gram)
             'item_value'              => $itemValue,
             'cod'                     => $cod,
         ]);
