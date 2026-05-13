@@ -83,6 +83,19 @@ class Logistik extends BaseController
                         fn($item) => strtoupper($item['courier']) === $filterKurir
                     ));
                 }
+
+                // Normalisasi nilai ongkir jika API mengembalikan jumlah terlalu besar
+                if (isset($result['data']) && is_array($result['data'])) {
+                    foreach ($result['data'] as &$item) {
+                        if (isset($item['price'])) {
+                            $item['price'] = $this->normalizeShippingRate($item['price']);
+                        }
+                        if (isset($item['price_net'])) {
+                            $item['price_net'] = $this->normalizeShippingRate($item['price_net']);
+                        }
+                    }
+                    unset($item);
+                }
             }
         }
 
@@ -325,5 +338,26 @@ class Logistik extends BaseController
         } catch (\Throwable $e) {
             return '<h1>🚨 ERROR:</h1><p>' . $e->getMessage() . '</p>';
         }
+    }
+
+    /**
+     * Normalize shipping rates from API responses.
+     *
+     * If a value looks unrealistically large for domestic shipping,
+     * assume it is expressed in the smallest unit and divide by 1000.
+     */
+    private function normalizeShippingRate($rate)
+    {
+        if (!is_numeric($rate)) {
+            return $rate;
+        }
+
+        $rate = (float) $rate;
+
+        if ($rate > 1000000) {
+            $rate = $rate / 1000;
+        }
+
+        return ($rate === (int) $rate) ? (int) $rate : $rate;
     }
 }
