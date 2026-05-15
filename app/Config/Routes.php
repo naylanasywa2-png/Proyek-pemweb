@@ -21,18 +21,18 @@ $routes->setAutoRoute(false);
  * --------------------------------------------------------------------
  */
 
-// --- 1. RUTE UMUM (Tanpa Login) ---
+// --- 1. RUTE UMUM (Akses Publik) ---
 $routes->get('/', 'Auth::index'); 
-$routes->get('katalog', 'Auth::getKatalog'); 
-
-// --- 2. AUTHENTICATION ---
 $routes->get('login', 'Auth::login'); 
 $routes->get('register', 'Auth::register'); 
+$routes->get('logout', 'Auth::logout');
+$routes->get('katalog', 'Auth::getKatalog'); // Katalog bisa dilihat tanpa login
+
+// --- 2. AUTHENTICATION ACTIONS ---
 $routes->post('auth/register_action', 'Auth::register_action');
 $routes->post('auth/login_action', 'Auth::login_action');
-$routes->get('logout', 'Auth::logout');
 
-// --- 3. DETAIL TEMA KATALOG ---
+// --- 3. DETAIL TEMA (Static Pages) ---
 $routes->get('katalog/scrapbook', 'Auth::getScrapbook');
 $routes->get('katalog/vintage', 'Auth::getVintage');
 $routes->get('katalog/mafia', 'Auth::getMafia');
@@ -41,23 +41,54 @@ $routes->get('katalog/grand-academy', 'Auth::getGrandAcademy');
 $routes->get('katalog/formal', 'Auth::getFormal');
 $routes->get('katalog/game', 'Auth::getGame');
 
-// --- 4. AREA TERPROTEKSI (Harus Login / Filter Auth) ---
-// Semua yang ada di dalam group ini akan dicek oleh satpam AuthFilter
+// --- 4. AREA TERPROTEKSI (Harus Login) ---
 $routes->group('', ['filter' => 'auth'], function($routes) {
     
-    // Pesanan Saya
-    $routes->get('user/history', 'User::history'); 
+    // Dashboard & Pengaturan Umum
+    $routes->get('dashboard', 'Dashboard::index');
+    $routes->get('pengaturan', 'Auth::getPengaturan');
     
-    // HALAMAN PEMBAYARAN (Baru ditambahkan ✨)
+    // --- FITUR USER (PEMBELI) ---
+    $routes->get('user/history', 'User::history'); 
     $routes->get('pembayaran', 'Auth::getPembayaran');
-    $routes->post('pembayaran/konfirmasi', 'Auth::prosesPembayaran'); // Jika nanti ada upload bukti
+    $routes->post('pembayaran/konfirmasi', 'Auth::prosesPembayaran'); 
     
     // Proses Order
     $routes->get('order/create', 'Order::create');
     $routes->post('order/checkout', 'Order::checkout');
     
-    // Area Khusus (Role Based)
+    // --- AREA VENDOR / DESAINER ---
+    $routes->group('vendor', function($routes) {
+        $routes->get('/', 'Vendor::index');
+        $routes->get('dashboard', 'Vendor::index');
+        $routes->get('pesanan', 'Vendor::pesanan');
+        $routes->get('profil', 'Vendor::profil');
+        
+        // Portofolio Vendor
+        $routes->get('portfolio', 'Vendor::portfolio'); 
+        $routes->post('portfolio/save', 'Vendor::savePortfolio'); // Rute simpan
+        
+        // Aksi Pesanan
+        $routes->get('updateStatus/(:num)', 'Vendor::updateStatus/$1');
+    });
+
+    // Role Lain (Opsional)
     $routes->get('desainer/dashboard', 'Desainer::index');
     $routes->get('admin/dashboard', 'Admin::index');
-    $routes->get('vendor/dashboard', 'Vendor::index');
 });
+
+// --- 5. RUTE LOGISTIK & API ---
+$routes->group('logistik', function ($routes) {
+    $routes->get('tesongkir',    'Logistik::tesOngkir');
+    $routes->post('tesongkir',   'Logistik::tesOngkir');
+    $routes->post('detail-pesanan', 'Logistik::detailPesanan');
+    $routes->post('simpan-pesanan', 'Logistik::simpanPesanan');
+    $routes->get('daftar-pesanan',  'Logistik::daftarPesanan');
+    $routes->post('hapus-pesanan/(:num)', 'Logistik::hapusPesanan/$1');
+    $routes->get('testemail',    'Logistik::testEmail');
+    $routes->get('test-db',       'Logistik::testSimpanOrder');
+});
+
+// --- 6. DIAGNOSTIK & OTOMASI ---
+$routes->get('otomasi', 'Otomasi::index');
+$routes->get('diagnostik-api', 'DiagnostikAPI::index');

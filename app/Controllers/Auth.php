@@ -13,7 +13,6 @@ class Auth extends BaseController
     // 2. HALAMAN LOGIN
     public function login()
     {
-        // Jika sudah login, dilarang masuk ke halaman login lagi!
         if (session()->get('logged_in')) {
             return redirect()->to(base_url('katalog'));
         }
@@ -26,10 +25,16 @@ class Auth extends BaseController
         return view('register_view'); 
     }
 
-    // 4. DASHBOARD KATALOG
+    // 4. DASHBOARD KATALOG (SUDAH DIPERBAIKI)
     public function getKatalog()
     {
-        return view('user/katalog');
+        $db = \Config\Database::connect();
+        
+        // Mengambil semua data dari tabel portfolio agar muncul di katalog user
+        $data['portfolios'] = $db->table('portfolio')->get()->getResultArray();
+
+        // Mengirim data portfolios ke view user/katalog
+        return view('user/katalog', $data);
     }
 
     // --- TEMA-TEMA KATALOG ---
@@ -41,22 +46,25 @@ class Auth extends BaseController
     public function getFormal() { return view('user/themes/formal'); }
     public function getGame() { return view('user/themes/game'); }
 
-    // 5. HALAMAN PEMBAYARAN (Baru ✨)
+    // 5. HALAMAN PEMBAYARAN
     public function getPembayaran()
     {
-        // View ini yang tadi kita buat desainnya
         return view('user/pembayaran');
     }
 
-    // 6. PROSES PEMBAYARAN (Baru ✨)
+    // 6. HALAMAN PENGATURAN
+    public function getPengaturan()
+    {
+        return view('user/pengaturan');
+    }
+
+    // 7. PROSES PEMBAYARAN
     public function prosesPembayaran()
     {
-        // Di sini nanti logika simpan bukti transfer ke database
-        // Sementara kita buat redirect balik ke katalog dengan pesan sukses
         return redirect()->to(base_url('katalog'))->with('success', 'Bukti pembayaran berhasil dikirim! 🎀');
     }
 
-    // 7. PROSES LOGIN ACTION
+    // 8. PROSES LOGIN ACTION
     public function login_action()
     {
         $session = session();
@@ -65,22 +73,26 @@ class Auth extends BaseController
         $usernameInput = $this->request->getPost('username');
         $passwordInput = $this->request->getPost('password');
 
-        // Cari user berdasarkan email
         $user = $db->table('users')->where('email', $usernameInput)->get()->getRowArray();
 
         if ($user && $passwordInput == $user['password']) { 
             
-            // Simpan session 'nama' agar dipahami oleh katalog.php
             $namaUser = explode('@', $user['email'])[0];
 
             $session->set([
-                'id_user'   => $user['id'], 
+                'id_user'   => $user['id_user'], 
                 'username'  => $user['email'], 
                 'nama'      => $namaUser,      
                 'logged_in' => true,           
                 'role'      => $user['role']
             ]);
             
+            // Jika role vendor, arahkan ke dashboard vendor
+            if ($user['role'] == 'vendor') {
+                return redirect()->to(base_url('vendor/dashboard'));
+            }
+            
+            // Jika role desainer (lainnya)
             if ($user['role'] == 'desainer') {
                 return redirect()->to(base_url('desainer/dashboard'));
             }
@@ -92,7 +104,7 @@ class Auth extends BaseController
         }
     }
 
-    // 8. PROSES DAFTAR ACTION
+    // 9. PROSES DAFTAR ACTION
     public function register_action()
     {
         $db = \Config\Database::connect();
@@ -105,7 +117,7 @@ class Auth extends BaseController
 
         $data = [
             'email'    => $email,
-            'password' => $password,
+            'password' => $password, 
             'role'     => 'user'
         ];
 
@@ -113,7 +125,7 @@ class Auth extends BaseController
         return redirect()->to(base_url('login'))->with('success', 'Akun berhasil dibuat! ✨');
     }
 
-    // 9. PROSES LOGOUT
+    // 10. PROSES LOGOUT
     public function logout()
     {
         session()->destroy();
