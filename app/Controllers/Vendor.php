@@ -6,15 +6,48 @@ use App\Controllers\BaseController;
 
 class Vendor extends BaseController
 {
-    // 1. Halaman Dashboard
+    // 1. Halaman Dashboard (Memuat Data Riil Database)
     public function index()
     {
-        return view('vendor/dashboard');
+        $db = \Config\Database::connect();
+
+        // A. Hitung Pesanan Baru (Status pesanan yang baru masuk / pending)
+        $pesananBaru = $db->table('orders')
+                          ->where('status_pesanan', 'pending')
+                          ->countAllResults();
+
+        // B. Hitung Total Penghasilan Riil (Jumlah uang dari pesanan yang berstatus 'selesai')
+        $penghasilanData = $db->table('orders')
+                              ->selectSum('total_bayar') // Menghitung total dari kolom total_bayar
+                              ->where('status_pesanan', 'selesai')
+                              ->get()
+                              ->getRowArray();
+        $totalPenghasilan = $penghasilanData['total_bayar'] ?? 0;
+
+        // C. Hitung Pesanan yang Sedang Diproses
+        $sedangDiproses = $db->table('orders')
+                             ->where('status_pesanan', 'diproses')
+                             ->countAllResults();
+
+        // D. Hitung Menunggu Konfirmasi (Pesanan masuk yang belum diubah statusnya oleh vendor)
+        $menungguKonfirmasi = $db->table('orders')
+                                 ->where('status_pesanan', 'pending')
+                                 ->countAllResults();
+
+        // Menyusun semua data riil ke dalam array untuk dikirim ke view dashboard
+        $data = [
+            'pesanan_baru'        => $pesananBaru,
+            'total_penghasilan'   => number_format($totalPenghasilan, 0, ',', '.'), // Format rupiah tanpa desimal
+            'sedang_diproses'     => $sedangDiproses,
+            'menunggu_konfirmasi' => $menungguKonfirmasi
+        ];
+
+        return view('vendor/dashboard', $data);
     }
 
     public function dashboard()
     {
-        return view('vendor/dashboard');
+        return $this->index();
     }
 
     // 2. Halaman Daftar Pesanan (Read)
@@ -32,7 +65,7 @@ class Vendor extends BaseController
         return view('vendor/pesanan', $data);
     }
 
-    // 3. Fungsi Update Status Pesanan
+    // 3. Fungsi Update Status Pesanan ke "Diproses"
     public function updateStatus($id)
     {
         $db = \Config\Database::connect();
@@ -44,7 +77,36 @@ class Vendor extends BaseController
         return redirect()->to(base_url('vendor/pesanan'))->with('message', 'Pesanan berhasil dikonfirmasi!');
     }
 
-    // 4. Halaman Portofolio
+    // 4. Menangani Proses Unggah File Album dari Modal Bootstrap
+    public function uploadDesain()
+    {
+        $id_order = $this->request->getPost('id_order');
+        $fileDesain = $this->request->getFile('file_desain');
+
+        // Validasi apakah berkas yang diunggah valid dan belum dipindahkan
+        if ($fileDesain && $fileDesain->isValid() && !$fileDesain->hasMoved()) {
+            
+            // Membuat nama acak yang unik dan aman untuk server
+            $namaFileBaru = $fileDesain->getRandomName();
+
+            // Pindahkan berkas langsung ke folder target: public/uploads/results/
+            $fileDesain->move(FCPATH . 'uploads/results', $namaFileBaru);
+
+            // Perbarui kolom nama file dan ubah status pesanan menjadi selesai di database
+            $db = \Config\Database::connect();
+            $db->table('orders')->where('id_order', $id_order)->update([
+                'file_desain'    => $namaFileBaru,
+                'status_pesanan' => 'selesai'
+            ]);
+
+            return redirect()->to(base_url('vendor/pesanan'))->with('message', 'File desain album berhasil diunggah dan dikirim!');
+        }
+
+        // Jika proses gagal atau berkas tidak valid
+        return redirect()->to(base_url('vendor/pesanan'))->with('message', 'Gagal mengunggah berkas. Silakan coba lagi.');
+    }
+
+    // 5. Halaman Portofolio
     public function portfolio()
     {
         $db = \Config\Database::connect();
@@ -54,15 +116,15 @@ class Vendor extends BaseController
         return view('vendor/portfolio', $data);
     }
 
-    // --- TAMBAHAN: FUNGSI SIMPAN DESAIN BARU ---
+    // 6. Fungsi Simpan Desain Baru Ke Portofolio
     public function savePortfolio()
     {
         $db = \Config\Database::connect();
 
-        // 1. Ambil file gambar yang diupload
+        // Ambil file gambar yang diupload
         $fileGambar = $this->request->getFile('gambar');
 
-        // 2. Olah upload gambar
+        // Olah upload gambar
         if ($fileGambar->isValid() && !$fileGambar->hasMoved()) {
             // Beri nama acak agar tidak ada nama file yang sama di server
             $namaGambar = $fileGambar->getRandomName();
@@ -72,7 +134,7 @@ class Vendor extends BaseController
             $namaGambar = 'default.jpg'; // Jika gagal upload gunakan gambar default
         }
 
-        // 3. Siapkan data untuk dimasukkan ke database
+        // Siapkan data untuk dimasukkan ke database
         $data = [
             'nama_tema' => $this->request->getPost('nama_tema'),
             'harga'     => $this->request->getPost('harga'),
@@ -80,10 +142,10 @@ class Vendor extends BaseController
             'gambar'    => $namaGambar
         ];
 
-        // 4. Proses Insert ke tabel 'portfolio'
+        // Proses Insert ke tabel 'portfolio'
         $db->table('portfolio')->insert($data);
 
-        // 5. Kembali ke halaman portfolio dengan notifikasi sukses
+        // Kembali ke halaman portfolio dengan notifikasi sukses
         return redirect()->to(base_url('vendor/portfolio'))->with('message', 'Desain baru berhasil ditambahkan ke portfolio!');
     }
 }

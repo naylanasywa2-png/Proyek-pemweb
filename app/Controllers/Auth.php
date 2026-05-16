@@ -25,15 +25,11 @@ class Auth extends BaseController
         return view('register_view'); 
     }
 
-    // 4. DASHBOARD KATALOG (SUDAH DIPERBAIKI)
+    // 4. DASHBOARD KATALOG
     public function getKatalog()
     {
         $db = \Config\Database::connect();
-        
-        // Mengambil semua data dari tabel portfolio agar muncul di katalog user
         $data['portfolios'] = $db->table('portfolio')->get()->getResultArray();
-
-        // Mengirim data portfolios ke view user/katalog
         return view('user/katalog', $data);
     }
 
@@ -46,7 +42,7 @@ class Auth extends BaseController
     public function getFormal() { return view('user/themes/formal'); }
     public function getGame() { return view('user/themes/game'); }
 
-    // 5. HALAMAN PEMBAYARAN
+    // 5. HALAMAN TAMPILAN FORM PEMBAYARAN
     public function getPembayaran()
     {
         return view('user/pembayaran');
@@ -58,10 +54,71 @@ class Auth extends BaseController
         return view('user/pengaturan');
     }
 
-    // 7. PROSES PEMBAYARAN
+    // 7. PROSES PEMBAYARAN (SUDAH DISINKRONKAN DENGAN FOLDER BUKTI_BAYAR ✨)
     public function prosesPembayaran()
     {
-        return redirect()->to(base_url('katalog'))->with('success', 'Bukti pembayaran berhasil dikirim! 🎀');
+        if (!session()->get('logged_in')) {
+            return redirect()->to(base_url('login'));
+        }
+
+        $db = \Config\Database::connect();
+        $fileBukti = $this->request->getFile('bukti_transfer');
+
+        // Memperbaiki typo variabel pengecekan hasMoved() sebelumnya
+        if ($fileBukti && $fileBukti->isValid() && !$fileBukti->hasMoved()) {
+            
+            // Generate nama file acak yang aman
+            $namaFileBaru = $fileBukti->getRandomName();
+            
+            // DISESUAIKAN: Mengarah ke folder 'bukti_bayar' sesuai struktur asli proyekmu
+            $pathTujuan = ROOTPATH . 'public/uploads/bukti_bayar';
+            if (!is_dir($pathTujuan)) {
+                mkdir($pathTujuan, 0777, true);
+            }
+
+            // Pindahkan file gambar ke folder bukti_bayar
+            $fileBukti->move($pathTujuan, $namaFileBaru);
+
+            $idUser = session()->get('id_user');
+            
+            // Ambil pesanan terakhir milik user yang sedang login
+            $pesananTerakhir = $db->table('orders')
+                                  ->where('id_user', $idUser)
+                                  ->where('status_pesanan', 'pending_payment')
+                                  ->orderBy('id_order', 'DESC')
+                                  ->get()
+                                  ->getRowArray();
+
+            if ($pesananTerakhir) {
+                
+                // Fitur Cerdas: Cek otomatis nama kolom yang ada di tabel orders kamu!
+                $kolomDitemukan = null;
+                $kandidatKolom  = ['bukti_transfer', 'bukti_bayar', 'bukti', 'image', 'bukti_pembayaran'];
+
+                foreach ($kandidatKolom as $kolom) {
+                    if ($db->fieldExists($kolom, 'orders')) {
+                        $kolomDitemukan = $kolom;
+                        break;
+                    }
+                }
+
+                if ($kolomDitemukan !== null) {
+                    // Update data ke tabel orders
+                    $db->table('orders')
+                       ->where('id_order', $pesananTerakhir['id_order'])
+                       ->update([
+                           'status_pesanan' => 'waiting_verification',
+                           $kolomDitemukan  => $namaFileBaru
+                       ]);
+
+                    return redirect()->to(base_url('katalog'))->with('success', 'Bukti transfer berhasil dikirim! Admin akan segera memverifikasi ya~ 💖');
+                } else {
+                    return redirect()->to(base_url('katalog'))->with('error', 'Kolom upload pada tabel orders tidak ditemukan di database.');
+                }
+            }
+        }
+
+        return redirect()->back()->with('msg', 'Gagal mengunggah bukti, pastikan file berupa foto yang valid ya! 😢');
     }
 
     // 8. PROSES LOGIN ACTION
@@ -87,12 +144,9 @@ class Auth extends BaseController
                 'role'      => $user['role']
             ]);
             
-            // Jika role vendor, arahkan ke dashboard vendor
             if ($user['role'] == 'vendor') {
                 return redirect()->to(base_url('vendor/dashboard'));
             }
-            
-            // Jika role desainer (lainnya)
             if ($user['role'] == 'desainer') {
                 return redirect()->to(base_url('desainer/dashboard'));
             }

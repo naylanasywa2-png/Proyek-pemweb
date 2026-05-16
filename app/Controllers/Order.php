@@ -49,8 +49,8 @@ class Order extends BaseController
 
         try {
             if ($model->save($data)) {
-                // REDIRECT LANGSUNG KE HISTORY
-                return redirect()->to(site_url('order/history'))->with('msg', 'Pesanan Berhasil Dibuat! ✨');
+                // DIUBAH: Menggunakan base_url agar pemanggilan rute redirect lebih aman dan konsisten
+                return redirect()->to(base_url('order/history'))->with('msg', 'Pesanan Berhasil Dibuat! ✨');
             }
         } catch (\Exception $e) {
             return redirect()->back()->withInput()->with('msg', 'Cek XAMPP kamu, MySQL mungkin mati! 🛠️');
@@ -68,9 +68,10 @@ class Order extends BaseController
         }
 
         $model = new OrderModel();
-        // Ambil data milik Aulia yang login
+        // Ambil data milik user yang sedang login
         $data['orders'] = $model->where('id_user', $idUser)->orderBy('id_order', 'DESC')->findAll();
         
+        // Memastikan view mengarah ke folder user/history
         return view('user/history', $data);
     }
 }

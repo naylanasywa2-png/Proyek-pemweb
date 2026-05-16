@@ -21,12 +21,16 @@ $routes->setAutoRoute(false);
  * --------------------------------------------------------------------
  */
 
-// --- 1. RUTE UMUM (Akses Publik) ---
+// --- 1. RUTE UMUM (Akses Publik Tanpa Hambatan Filter) ---
 $routes->get('/', 'Auth::index'); 
 $routes->get('login', 'Auth::login'); 
 $routes->get('register', 'Auth::register'); 
 $routes->get('logout', 'Auth::logout');
-$routes->get('katalog', 'Auth::getKatalog'); // Katalog bisa dilihat tanpa login
+$routes->get('katalog', 'Auth::getKatalog'); 
+
+// Rute Pembayaran Akses Publik (Pencegahan Error 404 Sesi Kosong)
+$routes->get('pembayaran', 'Auth::getPembayaran');
+$routes->post('pembayaran/konfirmasi', 'Auth::prosesPembayaran'); 
 
 // --- 2. AUTHENTICATION ACTIONS ---
 $routes->post('auth/register_action', 'Auth::register_action');
@@ -41,7 +45,7 @@ $routes->get('katalog/grand-academy', 'Auth::getGrandAcademy');
 $routes->get('katalog/formal', 'Auth::getFormal');
 $routes->get('katalog/game', 'Auth::getGame');
 
-// --- 4. AREA TERPROTEKSI (Harus Login) ---
+// --- 4. AREA TERPROTEKSI (Khusus Sesi Akun Terverifikasi) ---
 $routes->group('', ['filter' => 'auth'], function($routes) {
     
     // Dashboard & Pengaturan Umum
@@ -50,8 +54,7 @@ $routes->group('', ['filter' => 'auth'], function($routes) {
     
     // --- FITUR USER (PEMBELI) ---
     $routes->get('user/history', 'User::history'); 
-    $routes->get('pembayaran', 'Auth::getPembayaran');
-    $routes->post('pembayaran/konfirmasi', 'Auth::prosesPembayaran'); 
+    $routes->get('order/history', 'User::history'); 
     
     // Proses Order
     $routes->get('order/create', 'Order::create');
@@ -64,23 +67,32 @@ $routes->group('', ['filter' => 'auth'], function($routes) {
         $routes->get('pesanan', 'Vendor::pesanan');
         $routes->get('profil', 'Vendor::profil');
         
+        // 🛠️ TAMBAHAN BARU: Menangani Pengiriman Form Desain via POST
+        $routes->post('pesanan/uploadDesain', 'Vendor::uploadDesain');
+        
         // Portofolio Vendor
         $routes->get('portfolio', 'Vendor::portfolio'); 
-        $routes->post('portfolio/save', 'Vendor::savePortfolio'); // Rute simpan
+        $routes->post('portfolio/save', 'Vendor::savePortfolio'); 
         
         // Aksi Pesanan
         $routes->get('updateStatus/(:num)', 'Vendor::updateStatus/$1');
     });
 
-    // Role Lain (Opsional)
+    // Role Lain
     $routes->get('desainer/dashboard', 'Desainer::index');
+    
+    // --- AREA ADMIN (DIPROTEKSI PENUH OLEH FILTER AUTH) ---
     $routes->get('admin/dashboard', 'Admin::index');
+    $routes->get('admin/transaksi', 'Admin::transaksi'); 
+    $routes->get('admin/transaksi/setujui/(:num)', 'Admin::setujui/$1'); // Ditahan di sini agar divalidasi filter auth dahulu
+    $routes->get('admin/users', 'Admin::users'); 
+    $routes->get('admin/bannedUser/(:num)', 'Admin::bannedUser/$1'); 
 });
 
 // --- 5. RUTE LOGISTIK & API ---
 $routes->group('logistik', function ($routes) {
-    $routes->get('tesongkir',    'Logistik::tesOngkir');
-    $routes->post('tesongkir',   'Logistik::tesOngkir');
+    $routes->get('tesongkir',     'Logistik::tesOngkir');
+    $routes->post('tesongkir',    'Logistik::tesOngkir');
     $routes->post('detail-pesanan', 'Logistik::detailPesanan');
     $routes->post('simpan-pesanan', 'Logistik::simpanPesanan');
     $routes->get('daftar-pesanan',  'Logistik::daftarPesanan');

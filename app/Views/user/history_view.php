@@ -6,13 +6,15 @@
     <title>Pesanan Saya | MBook ✨</title>
     <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
     <link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;600;700;800&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    
     <style>
         body { 
             background-color: #f3f0ff; 
             font-family: 'Plus Jakarta Sans', sans-serif; 
         }
         .container {
-            max-width: 900px;
+            max-width: 950px;
         }
         .table-container {
             background: white;
@@ -25,6 +27,11 @@
             padding: 8px 15px; 
             font-size: 0.8rem;
             text-transform: capitalize;
+            font-weight: 600;
+        }
+        .btn-download {
+            font-size: 0.85rem;
+            padding: 6px 15px;
         }
     </style>
 </head>
@@ -50,13 +57,13 @@
                                 <th class="border-0">Tema</th>
                                 <th class="border-0">Tanggal Pesan</th>
                                 <th class="border-0">Status</th>
-                            </tr>
+                                <th class="border-0 text-center">Aksi</th> </tr>
                         </thead>
                         <tbody>
                             <?php foreach ($pesanan as $p): ?>
                             <tr>
                                 <td class="fw-bold text-dark">
-                                    <?= $p['nama_tema'] ?? 'Tema tidak ditemukan' ?>
+                                    <?= esc($p['nama_tema'] ?? 'Tema tidak ditemukan') ?>
                                 </td>
                                 
                                 <td class="text-muted small">
@@ -71,6 +78,18 @@
                                     <span class="badge <?= $badgeClass ?> badge-status">
                                         <?= $status ?>
                                     </span>
+                                </td>
+
+                                <td class="text-center">
+                                    <?php if ($status == 'selesai' && !empty($p['file_desain'])): ?>
+                                        <a href="<?= base_url('uploads/results/' . $p['file_desain']) ?>" class="btn btn-sm btn-success rounded-pill btn-download shadow-sm" download>
+                                            <i class="fa-solid fa-cloud-arrow-down me-1"></i> Unduh Album
+                                        </a>
+                                    <?php elseif ($status == 'diproses'): ?>
+                                        <span class="text-muted small italic"><i class="fa-solid fa-spinner fa-spin me-1"></i> Sedang didesain...</span>
+                                    <?php else: ?>
+                                        <span class="text-muted small">-</span>
+                                    <?php endif; ?>
                                 </td>
                             </tr>
                             <?php endforeach; ?>

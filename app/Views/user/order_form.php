@@ -4,7 +4,6 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Checkout Lucu | @author AULIA</title>
-    <!-- Import Font Aesthetic -->
     <link href="https://fonts.googleapis.com/css2?family=Quicksand:wght@500;700&display=swap" rel="stylesheet">
     <style>
         body { 
@@ -65,12 +64,20 @@
             transform: scale(1.05);
         }
         .info { font-size: 11px; color: #ffb3c1; margin-top: 20px; font-weight: bold; }
+        .alert-msg { background: #ffe5ec; color: #ff4d6d; padding: 10px; border-radius: 12px; font-size: 13px; margin-bottom: 15px; font-weight: bold; }
     </style>
 </head>
 <body>
     <div class="card">
         <span>✨ 🛍️ ✨</span>
         <h2>Konfirmasi Pesanan</h2>
+        
+        <?php if (session()->getFlashdata('msg')): ?>
+            <div class="alert-msg">
+                <?= session()->getFlashdata('msg') ?>
+            </div>
+        <?php endif; ?>
+
         <form action="<?= base_url('order/checkout'); ?>" method="post">
             
             <div class="form-group">
@@ -80,8 +87,6 @@
                     <option value="1" data-harga="15000">✂️ DIY Scrapbook (Rp 15.000)</option>
                     <option value="2" data-harga="20000">🕹️ Level Up: Game (Rp 20.000)</option>
                     <option value="3" data-harga="18000">📷 Classic Vintage (Rp 18.000)</option>
-                    
-                    <!-- Tambahan Tema Baru -->
                     <option value="4" data-harga="25000">🎩 The Mafia World (Rp 25.000)</option>
                     <option value="5" data-harga="17000">🛹 Urban Streetwear (Rp 17.000)</option>
                     <option value="6" data-harga="22000">🏛️ Grand Academy (Rp 22.000)</option>
@@ -90,7 +95,7 @@
 
             <div class="form-group">
                 <label>Mau pesan berapa? 🎀</label>
-                <input type="number" id="jumlah" name="jumlah" placeholder="Contoh: 10" required oninput="hitungTotal()">
+                <input type="number" id="jumlah" name="jumlah" placeholder="Contoh: 10" min="1" required oninput="hitungTotal()">
             </div>
 
             <div class="form-group">
@@ -107,6 +112,7 @@
                 <label>Total yang dibayar 🍰</label>
                 <input type="text" id="total_display" readonly placeholder="Akan muncul otomatis~">
                 <input type="hidden" id="total_bayar" name="total_bayar">
+                <input type="hidden" id="harga_satuan" name="harga_satuan">
             </div>
 
             <input type="hidden" name="id_vendor" value="1">
@@ -123,15 +129,19 @@
             const harga = select.options[select.selectedIndex].getAttribute('data-harga');
             const jumlah = document.getElementById('jumlah').value;
             const display = document.getElementById('total_display');
-            const hiddenInput = document.getElementById('total_bayar');
+            const hiddenTotal = document.getElementById('total_bayar');
+            const hiddenHarga = document.getElementById('harga_satuan');
             
+            // Masukkan harga satuan pilihan ke input hidden
+            hiddenHarga.value = harga;
+
             if (jumlah > 0) {
                 const total = jumlah * harga;
                 display.value = "Rp " + total.toLocaleString('id-ID');
-                hiddenInput.value = total;
+                hiddenTotal.value = total;
             } else {
                 display.value = "";
-                hiddenInput.value = 0;
+                hiddenTotal.value = 0;
             }
         }
     </script>
