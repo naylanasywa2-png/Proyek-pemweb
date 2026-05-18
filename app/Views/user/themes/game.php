@@ -96,6 +96,41 @@
         .container-buttons {
             margin-top: 20px;
         }
+        .slider-wrapper {
+            width: 100%;
+            max-width: 350px;
+            margin: 15px auto;
+        }
+        .slider-container {
+            display: flex;
+            overflow-x: auto;
+            scroll-snap-type: x mandatory;
+            gap: 15px;
+            padding-bottom: 15px;
+            /* Styling Scrollbar biar bernuansa Game/Cyberpunk */
+            scrollbar-width: thin;
+            scrollbar-color: #00ff41 #1a1a2e;
+        }
+        /* Khusus untuk browser Chrome/Edge/Safari */
+        .slider-container::-webkit-scrollbar {
+            height: 10px;
+        }
+        .slider-container::-webkit-scrollbar-thumb {
+            background: #00ff41;
+            border-radius: 10px;
+        }
+        .slider-container::-webkit-scrollbar-track {
+            background: #1a1a2e;
+            border-radius: 10px;
+        }
+        .slider-img {
+            flex: 0 0 90%; /* Ukuran 85% supaya ujung gambar sebelahnya sedikit terlihat */
+            scroll-snap-align: center;
+            border: 3px solid #00ff41;
+            border-radius: 5px;
+            object-fit: contain;
+            max-height: 400px;
+        }
     </style>
 </head>
 <body>
@@ -105,19 +140,35 @@
         <p>@author AULIA - Semester 2 Sistem Informasi</p>
         
         <!-- Menampilkan Aset Gambar dari Folder Uploads Vanti -->
-        <div class="gallery">
-            <img src="<?= base_url('uploads/templates/tema-game/hal1.jpg'); ?>" class="design-img" alt="Halaman 1">
-            <br>
-            <img src="<?= base_url('uploads/templates/tema-game/hal2.jpg'); ?>" class="design-img" alt="Halaman 2">
+        <p style="font-size: 0.9em; color: #ff0055;">[ SWIPE / GESER KANAN KIRI UNTUK MELIHAT FULL ALBUM ]</p>
+        <div class="slider-wrapper">
+            <div class="slider-container">
+                <img src="<?= base_url('uploads/templates/tema-game/1.jpg'); ?>" class="slider-img" alt="Halaman 1">
+                <img src="<?= base_url('uploads/templates/tema-game/2.jpg'); ?>" class="slider-img" alt="Halaman 2">
+                <img src="<?= base_url('uploads/templates/tema-game/3.jpg'); ?>" class="slider-img" alt="Halaman 3">
+                <img src="<?= base_url('uploads/templates/tema-game/4.jpg'); ?>" class="slider-img" alt="Halaman 4">
+                <img src="<?= base_url('uploads/templates/tema-game/5.jpg'); ?>" class="slider-img" alt="Halaman 5">
+            </div>
         </div>
         
         <div class="container-buttons">
-            <!-- Tombol Kembali ke Katalog -->
             <a href="<?= base_url('katalog'); ?>" class="btn-back">⬅ INSERT COIN TO EXIT</a>
             
+            <br><br>
+            
+            <form action="<?= base_url('otomasi/prosesGame'); ?>" method="post" enctype="multipart/form-data" style="margin-bottom: 20px; border: 2px dashed #ff0055; padding: 15px; border-radius: 10px; display: inline-block; max-width: 400px; text-align: center;">
+                <p style="color: #ff0055; margin-bottom: 10px; font-weight: bold;">[ INSERT YOUR AVATAR / FOTO ]</p>
+                
+                <input type="file" name="foto_user" accept="image/*" required style="margin-bottom: 15px; color: #fff;">
+                <br>
+                
+                <button type="submit" class="btn-order" style="background: #00ff41; color: #0d0221; box-shadow: 0 0 15px #00ff41; border: none; width: 100%;">
+                    ⚡ GENERATE MY ALBUM ⚡
+                </button>
+            </form>
+
             <br>
             
-            <!-- Tombol Order/Pesan ke Sistem Vanti -->
             <a href="<?= base_url('order/create'); ?>" class="btn-order">🔥 LEVEL UP: ORDER NOW 🔥</a>
         </div>
     </div>

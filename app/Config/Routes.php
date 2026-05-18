@@ -28,8 +28,16 @@ $routes->get('katalog/vintage', 'Auth::getVintage');
 $routes->get('katalog/mafia', 'Auth::getMafia');
 $routes->get('katalog/streetwear', 'Auth::getUrban');
 $routes->get('katalog/grand-academy', 'Auth::getGrandAcademy');
-$routes->get('katalog/formal', 'User::formal'); // Diubah ke User agar sinkron
-$routes->get('katalog/game', 'User::game');
+$routes->get('katalog/formal', 'Auth::formal'); // Diubah ke User agar sinkron
+$routes->get('katalog/game', 'Auth::getGame');
+
+// --- BARIS UNTUK MESIN OTOMASI VANTI ---
+$routes->get('otomasi', 'Otomasi::index');
+$routes->post('otomasi/prosesGame', 'Otomasi::prosesGame');
+$routes->post('otomasi/prosesGame', 'Otomasi::prosesGame');
+$routes->get('otomasi/downloadAlbum/(:segment)', 'Otomasi::downloadAlbum/$1');
+$routes->post('otomasi/prosesScrapbook', 'Otomasi::prosesScrapbook');
+$routes->get('otomasi/downloadScrapbook/(:segment)', 'Otomasi::downloadScrapbook/$1');
 
 // Proses Form & Auth
 $routes->post('auth/register_action', 'Auth::register_action');
@@ -50,4 +58,5 @@ $routes->group('', ['filter' => 'auth'], function($routes) {
     
     $routes->post('order/checkout', 'Order::checkout');
     $routes->get('order/create', 'Order::create');
+    
 });
