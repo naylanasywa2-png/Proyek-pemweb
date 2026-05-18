@@ -1,167 +1,261 @@
 <!DOCTYPE html>
-<html lang="en">
+<html lang="id">
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Yearbook Themes | @author AULIA</title>
-    <link href="https://fonts.googleapis.com/css2?family=Quicksand:wght@500;700&display=swap" rel="stylesheet">
+    <title>MBook | Eksplor Tema Yearbook 🎀</title>
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
+    <link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;600;700;800&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css">
+    
     <style>
+        :root {
+            --bg-body: #f8f7fd; 
+            --purple-primary: #a594f9;
+            --pink-soft: #ffabe1;
+            --white: #ffffff;
+            --gradient-banner: linear-gradient(135deg, #b19ff9 0%, #ffabe1 100%);
+        }
+
         body {
-            background-color: #fff5f8;
-            font-family: 'Quicksand', sans-serif;
+            font-family: 'Plus Jakarta Sans', sans-serif;
+            background-color: var(--bg-body);
             margin: 0;
-            padding: 40px 20px;
-            color: #5d5d5d;
+            display: flex;
+        }
+
+        /* --- SIDEBAR --- */
+        .sidebar {
+            width: 260px;
+            background: var(--white);
+            height: 100vh;
+            position: fixed;
+            padding: 30px 20px;
             display: flex;
             flex-direction: column;
+            border-right: 1px solid rgba(0,0,0,0.03);
+            z-index: 1000;
+        }
+
+        .brand-logo {
+            font-size: 1.5rem;
+            font-weight: 800;
+            color: var(--purple-primary);
+            text-decoration: none;
+            display: flex;
             align-items: center;
+            gap: 12px;
+            margin-bottom: 40px;
         }
 
-        .header {
-            text-align: center;
-            margin-bottom: 50px;
-        }
-
-        .header h1 {
-            color: #ff69b4;
-            font-size: 2.5rem;
+        .nav-link-custom {
+            display: flex;
+            align-items: center;
+            gap: 15px;
+            padding: 12px 18px;
+            text-decoration: none;
+            color: #6c757d;
+            border-radius: 12px;
             margin-bottom: 10px;
+            transition: 0.3s;
+            font-weight: 600;
         }
 
-        .grid-container {
-            display: grid;
-            grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));
-            gap: 25px;
-            width: 100%;
-            max-width: 1100px;
+        .nav-link-custom:hover, .nav-link-custom.active {
+            background: #f3f0ff;
+            color: var(--purple-primary);
         }
 
-        /* Card Link Wrapper */
-        .card-link {
-            text-decoration: none;
-            color: inherit;
-            display: block;
+        /* --- CONTENT AREA --- */
+        .main-wrapper {
+            margin-left: 260px;
+            width: calc(100% - 260px);
+            padding: 30px 40px;
         }
 
-        .card {
+        .header-top {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 35px;
+        }
+
+        .search-box {
             background: white;
-            border-radius: 30px;
-            padding: 30px;
+            border-radius: 50px;
+            padding: 10px 25px;
+            width: 350px;
+            display: flex;
+            align-items: center;
+            box-shadow: 0 4px 15px rgba(0,0,0,0.02);
+        }
+
+        .search-box input {
+            border: none;
+            outline: none;
+            margin-left: 10px;
+            width: 100%;
+            font-size: 0.9rem;
+        }
+
+        .welcome-banner {
+            background: var(--gradient-banner);
+            border-radius: 25px;
+            padding: 40px 45px;
+            color: white;
+            position: relative;
+            overflow: hidden;
+            margin-bottom: 40px;
+            box-shadow: 0 10px 25px rgba(165, 148, 249, 0.3);
+        }
+
+        .welcome-banner img {
+            position: absolute;
+            right: 40px;
+            bottom: -10px;
+            height: 160px;
+            filter: drop-shadow(0 10px 15px rgba(0,0,0,0.1));
+        }
+
+        /* --- DYNAMIC CARD STYLE --- */
+        .theme-card {
+            background: white;
+            border-radius: 22px;
+            padding: 15px;
+            transition: 0.4s;
             text-align: center;
-            border: 4px dashed #ffb6c1;
-            transition: all 0.3s ease;
-            min-height: 250px;
+            border: none;
+            height: 100%;
             display: flex;
             flex-direction: column;
-            justify-content: center;
+            justify-content: space-between;
+        }
+
+        .theme-card:hover {
+            transform: translateY(-10px);
+            box-shadow: 0 15px 35px rgba(0,0,0,0.06);
+        }
+
+        .img-holder {
+            border-radius: 18px;
+            height: 180px;
+            background: #f0f0f0;
+            display: flex;
             align-items: center;
-        }
-
-        .card:hover {
-            transform: translateY(-10px) rotate(2deg);
-            background-color: #fff0f5;
-            border-style: solid;
-            box-shadow: 0 15px 30px rgba(255, 182, 193, 0.4);
-        }
-
-        .icon {
-            font-size: 55px;
+            justify-content: center;
             margin-bottom: 15px;
+            position: relative;
+            overflow: hidden;
         }
 
-        .card h3 {
-            color: #ff69b4;
-            margin: 10px 0;
-            font-size: 1.4rem;
+        .img-holder img {
+            width: 100%;
+            height: 100%;
+            object-fit: cover;
         }
 
-        .card p {
-            font-size: 0.95rem;
-            line-height: 1.5;
-            color: #777;
-        }
-
-        .btn-back {
-            margin-top: 50px;
-            text-decoration: none;
-            color: #ff69b4;
-            font-weight: bold;
-            padding: 12px 30px;
-            border: 2px solid #ff69b4;
+        .btn-detail {
+            background: #f8f7fd;
+            color: var(--purple-primary);
+            padding: 8px 0;
             border-radius: 50px;
+            font-size: 0.85rem;
+            font-weight: 700;
+            text-decoration: none;
+            display: block;
+            width: 100%;
+            margin-top: 15px;
             transition: 0.3s;
+            border: 1px solid #f0eeff;
         }
 
-        .btn-back:hover {
-            background: #ff69b4;
+        .btn-detail:hover {
+            background: var(--purple-primary);
             color: white;
+        }
+
+        .price-tag {
+            color: var(--pink-soft);
+            font-weight: 800;
+            font-size: 0.9rem;
+            display: block;
+            margin-top: 5px;
         }
     </style>
 </head>
 <body>
 
-<div class="header">
-    <h1>🎨 Yearbook Themes 🎨</h1>
-    <p>Pilih konsep yang paling cocok buat karakter kelasmu!</p>
-</div>
-
-<div class="grid-container">
-    <!-- Tema Game -->
-    <a href="<?= base_url('katalog/game'); ?>" class="card-link">
-        <div class="card">
-            <span class="icon">🎮</span>
-            <h3>Level Up: Game</h3>
-            <p>Konsep retro 8-bit atau esport modern yang penuh energi!</p>
+    <div class="sidebar">
+        <a href="<?= base_url('katalog') ?>" class="brand-logo">
+            <i class="fas fa-book-open"></i>
+            <span>MBook📖</span>
+        </a>
+        <div class="nav-menu">
+            <a href="<?= base_url('katalog') ?>" class="nav-link-custom active"><i class="fas fa-house"></i> Beranda</a>
+            <a href="<?= base_url('user/history') ?>" class="nav-link-custom"><i class="fas fa-shopping-bag"></i> Pesanan Saya</a>
+            <a href="<?= base_url('pembayaran') ?>" class="nav-link-custom"><i class="fas fa-wallet"></i> Pembayaran</a>
+            <a href="<?= base_url('pengaturan') ?>" class="nav-link-custom"><i class="fas fa-user-gear"></i> Pengaturan</a>
         </div>
-    </a>
+    </div>
 
-    <!-- Tema Scrapbook -->
-    <a href="<?= base_url('katalog/scrapbook'); ?>" class="card-link">
-        <div class="card">
-            <span class="icon">✂️</span>
-            <h3>DIY Scrapbook</h3>
-            <p>Sentuhan potongan kertas, stiker, dan memori yang estetik.</p>
+    <div class="main-wrapper">
+        <div class="header-top">
+            <div class="search-box">
+                <i class="fas fa-search text-muted"></i>
+                <input type="text" placeholder="Cari tema favoritmu...">
+            </div>
+            
+            <div class="d-flex align-items-center gap-4">
+                <?php if (session()->get('logged_in')): ?>
+                    <div class="dropdown">
+                        <div class="d-flex align-items-center gap-2 bg-white p-1 pe-3 rounded-pill shadow-sm border" style="cursor: pointer;" data-bs-toggle="dropdown">
+                            <img src="https://ui-avatars.com/api/?name=<?= session()->get('nama') ?>&background=a594f9&color=fff" width="35" class="rounded-circle">
+                            <span class="small fw-bold text-dark"><?= session()->get('nama') ?></span>
+                            <i class="fas fa-chevron-down small text-muted"></i>
+                        </div>
+                        <ul class="dropdown-menu dropdown-menu-end border-0 shadow-lg mt-2" style="border-radius: 15px;">
+                            <li><a class="dropdown-item py-2 text-danger" href="<?= base_url('logout') ?>"><i class="fas fa-sign-out-alt me-2"></i> Keluar</a></li>
+                        </ul>
+                    </div>
+                <?php else: ?>
+                    <a href="<?= base_url('login') ?>" class="btn btn-primary rounded-pill px-4 fw-bold">Masuk</a>
+                <?php endif; ?>
+            </div>
         </div>
-    </a>
 
-    <!-- Tema Vintage -->
-    <a href="<?= base_url('katalog/vintage'); ?>" class="card-link">
-        <div class="card">
-            <span class="icon">🎞️</span>
-            <h3>Classic Vintage</h3>
-            <p>Nuansa nostalgia tahun 90-an dengan filter kamera film.</p>
+        <div class="welcome-banner">
+            <div style="max-width: 60%;">
+                <h2 class="fw-bold mb-2">Halo, <?= session()->get('nama') ?? 'User' ?>! ✨</h2>
+                <p class="mb-4 opacity-75">Pilih desain terbaik untuk mengabadikan momen sekolahmu!</p>
+            </div>
+            <img src="https://cdn-icons-png.flaticon.com/512/3429/3429153.png" alt="Books">
         </div>
-    </a>
 
-    <!-- Tema Mafia -->
-    <a href="<?= base_url('katalog/mafia'); ?>" class="card-link">
-        <div class="card">
-            <span class="icon">🎩</span>
-            <h3>The Mafia World</h3>
-            <p>Tampil elegan dan misterius dengan jas hitam dan konsep noir.</p>
+        <h4 class="fw-bold mb-4">Tema Tersedia</h4>
+        <div class="row g-4">
+            <?php if (!empty($portfolios)): ?>
+                <?php foreach ($portfolios as $p): ?>
+                    <div class="col-md-3">
+                        <div class="theme-card shadow-sm">
+                            <div>
+                                <div class="img-holder">
+                                    <img src="<?= base_url('uploads/portfolio/' . ($p['gambar'] ?? 'default.jpg')) ?>" alt="<?= $p['nama_tema'] ?? 'Tema' ?>">
+                                </div>
+                                <h6 class="fw-bold m-0 text-dark"><?= $p['nama_tema'] ?? 'Tanpa Nama' ?></h6>
+                                <span class="price-tag">Rp <?= number_format($p['harga'] ?? 0, 0, ',', '.') ?></span>
+                            </div>
+                            <a href="<?= base_url('order/create?id=' . ($p['id'] ?? '')) ?>" class="btn-detail">Pilih Tema</a>
+                        </div>
+                    </div>
+                <?php endforeach; ?>
+            <?php else: ?>
+                <div class="col-12 text-center py-5">
+                    <p class="text-muted">Belum ada tema yang tersedia saat ini. 🎀</p>
+                </div>
+            <?php endif; ?>
         </div>
-    </a>
+    </div>
 
-    <!-- Tema Streetwear -->
-    <a href="<?= base_url('katalog/streetwear'); ?>" class="card-link">
-        <div class="card">
-            <span class="icon">🛹</span>
-            <h3>Urban Streetwear</h3>
-            <p>Gaya santai, grafiti, dan vibes anak muda kota yang keren.</p>
-        </div>
-    </a>
-
-    <!-- Tema Formal -->
-    <a href="<?= base_url('katalog/formal'); ?>" class="card-link">
-        <div class="card">
-            <span class="icon">🏛️</span>
-            <h3>Grand Academy</h3>
-            <p>Konsep sekolah elit dengan seragam rapi dan latar megah.</p>
-        </div>
-    </a>
-</div>
-
-<a href="<?= base_url('/'); ?>" class="btn-back">⬅ Back to Home</a>
-
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
 </body>
 </html>

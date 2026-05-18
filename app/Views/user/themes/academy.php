@@ -24,7 +24,7 @@
             <h3 style="font-family: 'Cinzel';">UNIFORM & MANNERS</h3>
             <p>Konsep sekolah elit dengan seragam rapi dan latar megah.</p>
         </div>
-        <a href="<?= base_url('order/create') ?>" class="btn-enroll">ENROLL NOW</a>
+       <a href="<?= site_url('order/create') ?>" class="btn-enroll">ENROLL NOW</a>
     </div>
 </body>
 </html>

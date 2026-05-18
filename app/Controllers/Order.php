@@ -8,7 +8,6 @@ class Order extends BaseController
 {
     public function create()
     {
-        // Pengecekan login agar aman
         if (!session()->get('logged_in')) {
             return redirect()->to('/login');
         }
@@ -17,41 +16,61 @@ class Order extends BaseController
 
     public function checkout()
     {
-        // Validasi agar jumlah tidak kosong atau minus
+        $idUser = session()->get('id_user');
+
+        // Pengaman jika session hilang
+        if (!$idUser) {
+            return redirect()->to('/login')->with('error', 'Login ulang dulu ya Aulia! 🎀');
+        }
+
+        // Validasi input
         if (!$this->validate([
-            'jumlah' => 'required|numeric|greater_than[0]',
-            'id_desain' => 'required'
+            'jumlah'    => 'required|numeric|greater_than[0]',
+            'id_desain' => 'required',
+            'id_vendor' => 'required'
         ])) {
-            return redirect()->back()->withInput()->with('msg', 'Isi jumlah pesananmu dulu ya! 🎀');
+            return redirect()->back()->withInput()->with('msg', 'Lengkapi datanya dulu ya! ✨');
         }
 
         $model = new OrderModel();
         
-        // Logika hitung otomatis (sama seperti Game Mode)
-        $hargaSatuan = 15000; // Harga DIY Scrapbook
-        $jumlah = $this->request->getPost('jumlah');
-        $totalBayar = $jumlah * $hargaSatuan;
+        $hargaSatuan = 15000; 
+        $jumlah      = $this->request->getPost('jumlah');
+        $totalBayar  = $jumlah * $hargaSatuan;
 
         $data = [
-            'id_user'        => session()->get('id_user'),
-            'id_desain'      => $this->request->getPost('id_desain'), // Sesuai pilihan di form
+            'id_user'        => $idUser,
+            'id_desain'      => $this->request->getPost('id_desain'),
             'id_vendor'      => $this->request->getPost('id_vendor'),
             'jumlah'         => $jumlah,
             'total_bayar'    => $totalBayar,
             'status_pesanan' => 'pending_payment', 
         ];
 
-        if ($model->save($data)) {
-            return redirect()->to(base_url('user/history'))->with('msg', 'Pesanan Scrapbook Berhasil! ✨');
+        try {
+            if ($model->save($data)) {
+                // REDIRECT LANGSUNG KE HISTORY
+                return redirect()->to(site_url('order/history'))->with('msg', 'Pesanan Berhasil Dibuat! ✨');
+            }
+        } catch (\Exception $e) {
+            return redirect()->back()->withInput()->with('msg', 'Cek XAMPP kamu, MySQL mungkin mati! 🛠️');
         }
-        return redirect()->back()->with('msg', 'Gagal pesan, coba lagi ya Aulia!');
+
+        return redirect()->back()->with('msg', 'Gagal pesan, coba lagi ya!');
     }
 
     public function history()
     {
+        $idUser = session()->get('id_user');
+        
+        if (!$idUser) {
+            return redirect()->to('/login');
+        }
+
         $model = new OrderModel();
-        // Ambil data hanya milik user yang login (Aulia/Aul)
-        $data['orders'] = $model->where('id_user', session()->get('id_user'))->findAll();
+        // Ambil data milik Aulia yang login
+        $data['orders'] = $model->where('id_user', $idUser)->orderBy('id_order', 'DESC')->findAll();
+        
         return view('user/history', $data);
     }
 }

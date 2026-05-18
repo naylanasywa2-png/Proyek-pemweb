@@ -2,11 +2,16 @@
 <html lang="id">
 <head>
     <title>The Mafia World | @AULIA</title>
-    <link href="https://fonts.googleapis.com/css2?family=Playfair+Display:wght@700&family=Montserrat:wght@300&display=swap" rel="stylesheet">
+    <link href="https://fonts.googleapis.com/css2?family=Playfair+Display:wght@700&family=Montserrat:wght@300;600&display=swap" rel="stylesheet">
     <style>
         body { background: #000; color: #fff; font-family: 'Montserrat', sans-serif; margin: 0; text-align: center; }
-        .container { padding: 50px; background: linear-gradient(to bottom, #1a1a1a, #000); min-height: 100vh; }
-        h1 { font-family: 'Playfair Display', serif; color: #d4af37; font-size: 45px; letter-spacing: 5px; }
+        .container { padding: 50px; background: linear-gradient(to bottom, #1a1a1a, #000); min-height: 100vh; position: relative; }
+        
+        /* Tombol Kembali di Pojok Kiri Atas */
+        .top-nav { position: absolute; top: 20px; left: 30px; display: flex; gap: 20px; align-items: center; }
+        .link-gold { color: #d4af37; text-decoration: none; font-weight: bold; font-size: 14px; text-transform: uppercase; letter-spacing: 1px; }
+        
+        h1 { font-family: 'Playfair Display', serif; color: #d4af37; font-size: 45px; letter-spacing: 5px; margin-top: 40px; }
         .noir-frame { 
             border: 5px solid #d4af37; padding: 20px; display: inline-block; 
             box-shadow: 0 0 30px rgba(212, 175, 55, 0.2); background: #0a0a0a;
@@ -22,12 +27,26 @@
 </head>
 <body>
     <div class="container">
+        <div class="top-nav">
+            <a href="<?= base_url('katalog') ?>" class="link-gold">← KEMBALI</a>
+            
+            <?php if (!session()->get('logged_in')): ?>
+                <a href="<?= base_url('login') ?>" class="link-gold">MASUK</a>
+            <?php else: ?>
+                <span style="color: #d4af37; font-weight: bold; font-size: 14px;">
+                    [ AGEN: <?= strtoupper(session()->get('username')) ?> ]
+                </span>
+            <?php endif; ?>
+        </div>
+
         <h1>THE MAFIA WORLD</h1>
         <p>Elegansi dalam bayang-bayang.</p>
+        
         <div class="noir-frame">
             <img src="<?= base_url('uploads/mafia_sample.jpg') ?>" alt="Mafia Concept">
             <p style="color: #d4af37; margin-top: 15px;">CLASSY • MYSTERIOUS • POWER</p>
         </div><br>
+        
         <a href="<?= base_url('order/create') ?>" class="btn-join">AMBIL KONTRAK SEKARANG</a>
     </div>
 </body>

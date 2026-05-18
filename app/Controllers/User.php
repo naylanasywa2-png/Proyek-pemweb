@@ -2,65 +2,35 @@
 
 namespace App\Controllers;
 
-use App\Models\OrderModel;
-
 class User extends BaseController
 {
-    // Halaman Dashboard User
-    public function index()
-    {
-        if (!session()->get('logged_in')) {
-            return redirect()->to('/login');
-        }
-
-        $data = [
-            'title' => 'Dashboard User',
-            'username' => session()->get('username')
-        ];
-
-        return view('user/home', $data);
-    }
-
-    // --- TAMBAHKAN KODE DI BAWAH INI ---
-
-    // Fungsi untuk memanggil halaman Katalog Game
-    public function game()
-    {
-        if (!session()->get('logged_in')) {
-            return redirect()->to('/login');
-        }
-        return view('user/themes/game'); 
-    }
-
-    // Fungsi untuk memanggil halaman Katalog Formal (Scrapbook)
-    public function formal()
-    {
-        if (!session()->get('logged_in')) {
-            return redirect()->to('/login');
-        }
-        return view('user/themes/formal'); 
-    }
-
-    // --- SAMPAI DI SINI ---
-
     public function history()
     {
-        if (!session()->get('logged_in')) {
-            return redirect()->to('/login');
+        // Koneksi Database
+        $db = \Config\Database::connect();
+        
+        // Ambil ID User dari session
+        $id_user = session()->get('id_user');
+
+        // Proteksi: Jika user belum login, arahkan ke login
+        if (!$id_user) {
+            return redirect()->to(base_url('login'));
         }
 
-        $model = new OrderModel();
-        $id_user = session()->get('id_user');
-        $data['orders'] = $model->where('id_user', $id_user)
-                                ->orderBy('id_order', 'DESC')
-                                ->findAll();
+        /**
+         * PERBAIKAN JOIN:
+         * 1. Menggunakan 'id_desain' (sesuai tabel orders kamu)
+         * 2. Menghubungkan ke 'portfolio.id' (sesuai tabel portfolio kamu)
+         */
+        $data['pesanan'] = $db->table('orders')
+                             ->select('orders.*, portfolio.nama_tema') 
+                             ->join('portfolio', 'portfolio.id = orders.id_desain')
+                             ->where('orders.id_user', $id_user)
+                             ->orderBy('orders.created_at', 'DESC') // Agar pesanan terbaru muncul paling atas
+                             ->get()
+                             ->getResultArray();
 
-        return view('user/history', $data);
-    }
-
-    public function logout()
-    {
-        session()->destroy();
-        return redirect()->to('/login');
+        // Kirim data ke view
+        return view('user/history_view', $data);
     }
 }
