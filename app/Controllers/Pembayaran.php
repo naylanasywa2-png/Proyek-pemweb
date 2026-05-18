@@ -135,9 +135,9 @@ class Pembayaran extends BaseController
                 'created_at'   => date('Y-m-d H:i:s'),
             ]);
 
-            // Update status pesanan menjadi 'diproses' (menunggu konfirmasi admin)
+            // Update status pesanan menjadi 'dibayar' (menunggu konfirmasi admin)
             $db->table('orders')->where('id_order', $idOrder)->update([
-                'status_pesanan' => 'diproses',
+                'status_pesanan' => 'dibayar',
             ]);
 
             session()->setFlashdata('sukses', "Bukti pembayaran #ORD-{$idOrder} berhasil diunggah. Menunggu konfirmasi admin.");
@@ -283,6 +283,40 @@ class Pembayaran extends BaseController
         }
 
         return redirect()->to(base_url('admin/pembayaran'));
+    }
+
+    // =========================================================
+    // USER: Status pembayaran pesanan tertentu
+    // =========================================================
+    public function statusPembayaran(int $idOrder)
+    {
+        helper(['url']);
+
+        $db      = \Config\Database::connect();
+        $order   = $db->table('orders')->where('id_order', $idOrder)->get()->getRowArray();
+        $payment = $db->table('payments')->where('id_order', $idOrder)->orderBy('created_at', 'DESC')->get()->getRowArray();
+
+        if (! $order) {
+            session()->setFlashdata('error', 'Pesanan tidak ditemukan.');
+            return redirect()->to(base_url('logistik/daftar-pesanan'));
+        }
+
+        // Jika belum ada pembayaran, redirect ke form upload
+        if (! $payment) {
+            return redirect()->to(base_url("pembayaran/upload/{$idOrder}"));
+        }
+
+        // Tampilkan status via flash + redirect ke daftar pesanan
+        $statusMsg = match($payment['status']) {
+            'menunggu'     => "⏳ Pembayaran #ORD-{$idOrder} sedang menunggu konfirmasi admin.",
+            'dikonfirmasi' => "✅ Pembayaran #ORD-{$idOrder} sudah dikonfirmasi!",
+            'ditolak'      => "❌ Pembayaran #ORD-{$idOrder} ditolak: " . ($payment['catatan_admin'] ?? '-'),
+            default        => "Status pembayaran: " . $payment['status'],
+        };
+
+        $key = $payment['status'] === 'ditolak' ? 'error' : 'sukses';
+        session()->setFlashdata($key, $statusMsg);
+        return redirect()->to(base_url('logistik/daftar-pesanan'));
     }
 
     // =========================================================

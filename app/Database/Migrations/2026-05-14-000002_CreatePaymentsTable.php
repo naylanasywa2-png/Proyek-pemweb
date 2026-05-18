@@ -24,10 +24,11 @@ class CreatePaymentsTable extends Migration
                 'auto_increment' => true,
             ],
             'id_order' => [
-                'type'     => 'INT',
-                'unsigned' => false,
-                'null'     => false,
-                'comment'  => 'Relasi ke tabel orders',
+                'type'       => 'INT',
+                'constraint' => 11,
+                'unsigned'   => true,
+                'null'       => false,
+                'comment'    => 'Relasi ke tabel orders',
             ],
             'metode_bayar' => [
                 'type'       => 'ENUM',
@@ -87,6 +88,8 @@ class CreatePaymentsTable extends Migration
         $this->forge->addKey('id_payment', true);
         $this->forge->addKey('id_order');
         $this->forge->addKey('status');
+
+        $this->forge->addForeignKey('id_order', 'orders', 'id_order', 'CASCADE', 'CASCADE');
 
         $this->forge->createTable('payments', true);
     }

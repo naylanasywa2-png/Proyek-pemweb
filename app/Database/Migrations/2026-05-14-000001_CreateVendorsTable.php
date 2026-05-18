@@ -16,99 +16,103 @@ class CreateVendorsTable extends Migration
 {
     public function up(): void
     {
-        // Cek apakah kolom sudah ada (agar migration aman dijalankan ulang)
-        $db = \Config\Database::connect();
-        $fields = $db->getFieldNames('vendor');
-
-        // Tambah kolom baru ke tabel vendor yang sudah ada
-        $newFields = [];
-
-        if (! in_array('kota', $fields)) {
-            $newFields['kota'] = [
+        $this->forge->addField([
+            'id_vendor' => [
+                'type'           => 'INT',
+                'constraint'     => 11,
+                'unsigned'       => true,
+                'auto_increment' => true,
+            ],
+            'nama_vendor' => [
+                'type'       => 'VARCHAR',
+                'constraint' => 150,
+                'null'       => false,
+            ],
+            'kontak' => [
+                'type'       => 'VARCHAR',
+                'constraint' => 100,
+                'null'       => true,
+            ],
+            'alamat' => [
+                'type' => 'TEXT',
+                'null' => true,
+            ],
+            'kota' => [
                 'type'       => 'VARCHAR',
                 'constraint' => 100,
                 'null'       => true,
                 'default'    => null,
-                'after'      => 'alamat',
-            ];
-        }
-
-        if (! in_array('harga_cetak', $fields)) {
-            $newFields['harga_cetak'] = [
+            ],
+            'harga_cetak' => [
                 'type'       => 'DECIMAL',
                 'constraint' => '12,2',
                 'null'       => false,
                 'default'    => '80000.00',
                 'comment'    => 'Harga cetak per unit (Rupiah)',
-                'after'      => 'kota',
-            ];
-        }
-
-        if (! in_array('is_aktif', $fields)) {
-            $newFields['is_aktif'] = [
-                'type'    => 'TINYINT',
+            ],
+            'is_aktif' => [
+                'type'       => 'TINYINT',
                 'constraint' => 1,
-                'null'    => false,
-                'default' => 1,
-                'comment' => '1=buka, 0=tutup',
-                'after'   => 'harga_cetak',
-            ];
-        }
-
-        if (! in_array('jam_buka', $fields)) {
-            $newFields['jam_buka'] = [
+                'null'       => false,
+                'default'    => 1,
+                'comment'    => '1=buka, 0=tutup',
+            ],
+            'jam_buka' => [
                 'type'       => 'VARCHAR',
                 'constraint' => 20,
                 'null'       => true,
                 'default'    => '08:00',
                 'comment'    => 'Jam operasional mulai',
-                'after'      => 'is_aktif',
-            ];
-        }
-
-        if (! in_array('jam_tutup', $fields)) {
-            $newFields['jam_tutup'] = [
+            ],
+            'jam_tutup' => [
                 'type'       => 'VARCHAR',
                 'constraint' => 20,
                 'null'       => true,
                 'default'    => '17:00',
                 'comment'    => 'Jam operasional selesai',
-                'after'      => 'jam_buka',
-            ];
-        }
-
-        if (! in_array('telegram_chat_id', $fields)) {
-            $newFields['telegram_chat_id'] = [
+            ],
+            'telegram_chat_id' => [
                 'type'       => 'VARCHAR',
                 'constraint' => 50,
                 'null'       => true,
                 'default'    => null,
                 'comment'    => 'Chat ID Telegram vendor untuk notifikasi',
-                'after'      => 'jam_tutup',
-            ];
-        }
-
-        if (! in_array('updated_at', $fields)) {
-            $newFields['updated_at'] = [
+            ],
+            'created_at' => [
                 'type' => 'DATETIME',
                 'null' => true,
                 'default' => null,
-                'after' => 'created_at',
-            ];
-        }
+            ],
+            'updated_at' => [
+                'type' => 'DATETIME',
+                'null' => true,
+                'default' => null,
+            ],
+        ]);
 
-        if (! empty($newFields)) {
-            $this->forge->addColumn('vendor', $newFields);
-        }
+        $this->forge->addKey('id_vendor', true);
+        
+        // Kita gunakan nama tabel 'vendors' (plural) untuk konsistensi dengan nama kelas
+        $this->forge->createTable('vendors', true);
 
-        // Update data vendor awal agar punya kota
-        $db->table('vendor')->where('id_vendor', 1)->update(['kota' => 'Surabaya']);
-        $db->table('vendor')->where('id_vendor', 2)->update(['kota' => 'Jakarta']);
+        // Insert default data jika diperlukan
+        $db = \Config\Database::connect();
+        $db->table('vendors')->insertBatch([
+            [
+                'nama_vendor' => 'Percetakan Surabaya',
+                'kota'        => 'Surabaya',
+                'created_at'  => date('Y-m-d H:i:s'),
+            ],
+            [
+                'nama_vendor' => 'Percetakan Jakarta',
+                'kota'        => 'Jakarta',
+                'created_at'  => date('Y-m-d H:i:s'),
+            ]
+        ]);
     }
 
     public function down(): void
     {
-        $dropCols = ['kota', 'harga_cetak', 'is_aktif', 'jam_buka', 'jam_tutup', 'telegram_chat_id', 'updated_at'];
-        $this->forge->dropColumn('vendor', $dropCols);
+        $this->forge->dropTable('vendors', true);
     }
 }

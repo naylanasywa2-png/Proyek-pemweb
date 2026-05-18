@@ -2,44 +2,70 @@
 
 use CodeIgniter\Router\RouteCollection;
 
-/**
- * @var RouteCollection $routes
- */
+/** @var RouteCollection $routes */
 
-// --- RUTE UTAMA & AUTH ---
+// ============================================================================
+// RUTE UTAMA & AUTH
+// ============================================================================
 $routes->get('/', 'Home::index');
-$routes->get('login', 'Auth::login');
-$routes->post('login', 'Auth::loginProcess');
-$routes->get('logout', 'Auth::logout');
-$routes->get('register', 'Auth::register');
+$routes->get('login',     'Auth::login');
+$routes->post('login',    'Auth::loginProcess');
+$routes->get('logout',    'Auth::logout');
+$routes->get('register',  'Auth::register');
 $routes->post('register', 'Auth::registerProcess');
-$routes->get('dashboard', 'Dashboard::index', ['filter' => 'auth']);
+$routes->get('dashboard', 'Dashboard::index');
 
-// --- RUTE LOGISTIK & API ---
+// ============================================================================
+// RUTE LOGISTIK & ONGKIR
+// ============================================================================
 $routes->group('logistik', function ($routes) {
-    // Cek ongkir (GET = tampilkan form, POST = proses)
+    // Form cek ongkir: GET = tampil form | POST = proses & tampil hasil
     $routes->get('tesongkir',  'Logistik::tesOngkir');
     $routes->post('tesongkir', 'Logistik::tesOngkir');
 
     // Halaman konfirmasi detail sebelum simpan (POST only)
     $routes->post('detail-pesanan', 'Logistik::detailPesanan');
 
-    // Simpan ke DB (POST only, dari halaman konfirmasi)
+    // Simpan pesanan ke database (POST only)
     $routes->post('simpan-pesanan', 'Logistik::simpanPesanan');
 
-    // Daftar pesanan
+    // Riwayat semua pesanan (GET)
     $routes->get('daftar-pesanan', 'Logistik::daftarPesanan');
 
-    // Hapus pesanan - sekarang POST (lebih aman dari GET)
+    // Hapus pesanan pending (POST only)
     $routes->post('hapus-pesanan/(:num)', 'Logistik::hapusPesanan/$1');
-
-    // Dev tools
-    $routes->get('testemail',  'Logistik::testEmail');
-    $routes->get('test-db',    'Logistik::testSimpanOrder');
 });
 
-// --- RUTE OTOMASI ---
+// ============================================================================
+// RUTE PEMBAYARAN (User)
+// ============================================================================
+$routes->group('pembayaran', function ($routes) {
+    // User: form upload bukti (GET = tampil form, POST = proses upload)
+    $routes->get('upload/(:num)',  'Pembayaran::formUpload/$1');
+    $routes->post('upload/(:num)', 'Pembayaran::prosesUpload/$1');
+
+    // User: lihat status pembayarannya
+    $routes->get('status/(:num)', 'Pembayaran::statusPembayaran/$1');
+});
+
+// ============================================================================
+// RUTE ADMIN
+// ============================================================================
+$routes->group('admin', function ($routes) {
+    // Admin: daftar semua pembayaran
+    $routes->get('pembayaran', 'Pembayaran::daftarAdmin');
+
+    // Admin: konfirmasi pembayaran (POST only)
+    $routes->post('pembayaran/konfirmasi/(:num)', 'Pembayaran::konfirmasi/$1');
+
+    // Admin: tolak pembayaran (POST only)
+    $routes->post('pembayaran/tolak/(:num)', 'Pembayaran::tolak/$1');
+});
+
+// ============================================================================
+// RUTE LAINNYA
+// ============================================================================
 $routes->get('otomasi', 'Otomasi::index');
 
-// --- [SEMENTARA] Diagnostik API - hapus setelah selesai testing ---
+// Dev tool: diagnostik API (hapus setelah production)
 $routes->get('diagnostik-api', 'DiagnostikAPI::index');
