@@ -233,6 +233,30 @@
 
         <h4 class="fw-bold mb-4">Tema Tersedia</h4>
         <div class="row g-4">
+            <div class="col-md-3">
+                <div class="theme-card shadow-sm">
+                    <div>
+                        <div class="img-holder">
+                            <img src="<?= base_url('uploads/templates/tema-scrapbook/1.jpg'); ?>" alt="Tema Scrapbook">
+                        </div>
+                        <h6 class="fw-bold m-0 text-dark">Tema Scrapbook</h6>
+                        <span class="price-tag">Rp 50.000</span>
+                    </div>
+                    <a href="<?= base_url('katalog/scrapbook'); ?>" class="btn-detail" style="background: #a594f9; color: white;">Pilih Tema</a>
+                </div>
+            </div>
+            <div class="col-md-3">
+                <div class="theme-card shadow-sm">
+                    <div>
+                        <div class="img-holder">
+                            <img src="<?= base_url('uploads/templates/tema-game/1.jpg'); ?>" alt="Tema Game" onerror="this.src='https://via.placeholder.com/300x400?text=Tema+Game'">
+                        </div>
+                        <h6 class="fw-bold m-0 text-dark">Tema Game Retro</h6>
+                        <span class="price-tag">Rp 50.000</span>
+                    </div>
+                    <a href="<?= base_url('katalog/game'); ?>" class="btn-detail" style="background: #a594f9; color: white;">Pilih Tema</a>
+                </div>
+            </div>
             <?php if (!empty($portfolios)): ?>
                 <?php foreach ($portfolios as $p): ?>
                     <div class="col-md-3">
